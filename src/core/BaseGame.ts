@@ -105,7 +105,7 @@ export abstract class BaseGame extends Phaser.Scene {
    * Wrong: soft sound, wiggle, greys out that choice; after 2 misses the right answer pulses as a hint.
    * Right: celebrate, say the confirmation, then move on.
    */
-  protected async handleAnswer(card: TapCard, ok: boolean, correct: TapCard, confirm: Line[]): Promise<void> {
+  protected async handleAnswer(card: TapCard, ok: boolean, correct: TapCard, confirm: Line[], wrongLines?: Line[]): Promise<void> {
     if (this.busy) return;
     if (!ok) {
       this.attempts++;
@@ -113,7 +113,7 @@ export abstract class BaseGame extends Phaser.Scene {
       wiggle(this, card);
       card.paint(C.grey);
       card.disableInteractive();
-      void this.say([line(pickOne(TRY_AGAIN), this.lang)]);
+      void this.say(wrongLines ?? [line(pickOne(TRY_AGAIN), this.lang)]);
       if (this.attempts === 2) pulse(this, correct);
       return;
     }
@@ -121,8 +121,14 @@ export abstract class BaseGame extends Phaser.Scene {
     card.paint(C.green);
     sfx.correct();
     confetti(this, card.x, card.y, 40);
-    this.recordTask(this.attempts === 0);
-    await this.speakFor([line(pickOne(PRAISE), this.lang), ...confirm], 6000);
+    await this.completeTask(this.attempts === 0, confirm);
+  }
+
+  /** Marks the current task done (praise + confirmation), then moves to the next one. */
+  protected async completeTask(firstTry: boolean, confirm: Line[]): Promise<void> {
+    this.busy = true;
+    this.recordTask(firstTry);
+    await this.speakFor([line(pickOne(PRAISE), this.lang), ...confirm], 7000);
     await wait(this, 350);
     this.startTask();
   }

@@ -40,6 +40,7 @@ export const P = {
   adventureDone: { en: 'You finished the whole adventure! Super focus!', zh: '你完成了全部冒险！你真专心！' },
   longer: { en: 'Next time, the adventure will be a little longer!', zh: '下次的冒险会更长一点哦！' },
   rest: { en: "Let's rest our eyes for a little while!", zh: '我们让眼睛休息一下吧！' },
+  newSticker: { en: 'You got a new sticker!', zh: '你得到了一张新贴纸！' },
   ok: { en: 'OK', zh: '好的' },
   start: { en: 'Start', zh: '开始' },
   stars: (n: number): Bi => ({

@@ -3,17 +3,22 @@
 import Phaser from 'phaser';
 import { modeLines, modeText } from '../core/lang';
 import { pickOne, shuffle } from '../core/rand';
-import { pathLength, persist, save, type GameId } from '../core/save';
+import { isEnabled, pathLength, persist, save, type GameId } from '../core/save';
 import { sfx } from '../core/sfx';
 import { speech } from '../core/speech';
-import { background, button, C, confetti, popIn, pulse, txt, wait } from '../core/ui';
+import { background, button, C, confetti, popIn, pulse, tapCard, txt, wait } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { P } from '../data/phrases';
+import { awardSticker } from '../data/stickers';
 
-/** Picks games for the path: every game once first, then extras, never the same game twice in a row. */
+/** Picks games (only those switched on in Parent Corner), all different where possible, never the same twice in a row. */
 function makePath(len: number): GameId[] {
-  const out = shuffle(GAME_IDS).slice(0, Math.min(len, GAME_IDS.length));
-  while (out.length < len) out.push(pickOne(GAME_IDS.filter((g) => g !== out[out.length - 1])));
+  const ids = GAME_IDS.filter(isEnabled);
+  const out = shuffle(ids).slice(0, Math.min(len, ids.length));
+  while (out.length < len) {
+    const choices = ids.filter((g) => g !== out[out.length - 1]);
+    out.push(pickOne(choices.length ? choices : ids));
+  }
   return out;
 }
 
@@ -124,11 +129,31 @@ export class PathScene extends Phaser.Scene {
     this.time.delayedCall(400, () => confetti(this, W * 0.75, H * 0.6, 120));
     this.time.delayedCall(800, () => confetti(this, W * 0.5, H * 0.5, 160));
 
-    const banner = txt(this, W / 2, 300, '🏆  +5 ⭐', 120).setStroke('#ffffff', 12);
-    popIn(this, banner, 300);
-    const home = button(this, W / 2, 960, 420, 150, '🏠', () => this.leave('Home'), { fill: C.blue, size: 70 });
-    popIn(this, home, 1200);
-    await wait(this, 600);
-    void speech.say([...modeLines(P.adventureDone), ...(longer ? modeLines(P.longer) : [])]);
+    await wait(this, 900);
+    const sticker = awardSticker();
+    this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.35).setInteractive().setDepth(100);
+    const card = tapCard(this, W / 2, H / 2, 1000, 820, null, { radius: 60 }).setDepth(101);
+    popIn(this, card);
+    card.add(txt(this, 0, -300, '🏆  +5 ⭐', 100));
+    const gift = txt(this, 0, -40, sticker ? '🎁' : '🌟', 220);
+    card.add(gift);
+    const label = txt(this, 0, 150, '', 52);
+    card.add(label);
+    const home = button(this, sticker ? -170 : 0, 310, 300, 140, '🏠', () => this.leave('Home'), { fill: C.blue, size: 70 });
+    card.add(home);
+    if (sticker) card.add(button(this, 170, 310, 300, 140, '📒', () => this.leave('Sticker'), { fill: C.pink, size: 70 }));
+
+    const lines = [...modeLines(P.adventureDone), ...(longer ? modeLines(P.longer) : [])];
+    if (!sticker) return void speech.say(lines);
+
+    // gift wobbles, then opens into the new sticker
+    this.tweens.add({ targets: gift, angle: { from: -10, to: 10 }, duration: 120, yoyo: true, repeat: 5 });
+    await wait(this, 1500);
+    sfx.tada();
+    gift.setText(sticker);
+    popIn(this, gift);
+    confetti(this, W / 2, H / 2 - 40, 100);
+    label.setText(modeText(P.newSticker));
+    void speech.say([...lines, ...modeLines(P.newSticker)]);
   }
 }

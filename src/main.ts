@@ -3,10 +3,16 @@ import { BootScene } from './scenes/BootScene';
 import { HomeScene } from './scenes/HomeScene';
 import { PathScene } from './scenes/PathScene';
 import { ParentScene } from './scenes/ParentScene';
+import { StickerScene } from './scenes/StickerScene';
 import { OverlayScene } from './scenes/OverlayScene';
 import { CountScene } from './games/CountScene';
 import { WordScene } from './games/WordScene';
+import { ScienceScene } from './games/ScienceScene';
+import { MoralScene } from './games/MoralScene';
 import { TapOnlyScene } from './games/TapOnlyScene';
+import { MemoryScene } from './games/MemoryScene';
+import { PatternScene } from './games/PatternScene';
+import { SpotScene } from './games/SpotScene';
 
 // The game is always 1080 tall; the width follows the phone's shape so wide phones have no black bars.
 const H = 1080;
@@ -20,7 +26,11 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: W, height: H },
   input: { activePointers: 3 },
   // Order matters: Overlay is last so it always draws on top.
-  scene: [BootScene, HomeScene, PathScene, ParentScene, CountScene, WordScene, TapOnlyScene, OverlayScene],
+  scene: [
+    BootScene, HomeScene, PathScene, ParentScene, StickerScene,
+    CountScene, WordScene, ScienceScene, MoralScene, TapOnlyScene, MemoryScene, PatternScene, SpotScene,
+    OverlayScene,
+  ],
 });
 
 // handy for debugging in the browser console during development only

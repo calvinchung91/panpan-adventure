@@ -20,10 +20,19 @@ In Chrome, press F12 → the phone icon (device toolbar) → pick a phone and ro
 - Each session is a **path of games** ending in a 🏆. Finishing the whole path gives **+5 ⭐**.
 - It starts at **3 games** and grows by one game every 3 finished adventures, up to 6. This slowly stretches how long he can stay on task.
 - If he leaves halfway, the path is remembered and "Continue" appears on the home screen.
+- Finishing an adventure also opens a 🎁 with a **new sticker** for the **📒 Sticker Book** (40 to collect). Stickers come only from whole adventures, which rewards staying focused to the end.
 
-### The three games
+### Sticker Book (📒 on the home screen)
+Drag won stickers from the tray onto the picture; drag one back onto the tray to remove it. Positions are saved.
+
+### All 8 games
 | Game | Teaches | How difficulty grows (levels 1 → 5) |
 |---|---|---|
+| 🔬 **Science** | Animal homes, healthy food, 5 senses, day/night, sink or float, weather & clothes, life cycles | 1: animal homes, healthy food (2 choices) · 2: + senses, day/night (3 choices) · 3: + sink/float, weather · 4: life cycles, "what not to eat too much" · 5: everything, 4 choices |
+| 💛 **Kindness** (Moral) | Sharing, helping, sorry, thank you, honesty, waiting your turn, gentle with pets, hygiene, tidying | 3 short stories per round; choose what to do. The unkind choice gently explains how someone would feel, then he tries again |
+| 🃏 **Memory** | Memory & concentration, vocabulary (each match is spoken) | 1: 2 pairs, see all cards first · 2: 3 pairs · 3: 4 pairs · 4: 5 pairs, no peek · 5: 6 pairs |
+| 🧩 **Patterns** | Logic: what comes next | 1: AB (🔴🔵🔴🔵❓) · 2: AAB, ABB · 3: ABC, AABB · 4: what's **missing** in the middle · 5: ABCD, 4 choices |
+| 🔍 **Spot It** | Careful looking & focus | 1: 6 pictures, 1 difference · 2: 9 pictures · 3: 2 differences · 4: 12 pictures · 5: 16 pictures, 3 differences. After 3 wrong taps, one difference gently pulses |
 | 🔢 **Maths**: Count & Compare | Counting to 30, more/fewer, + and − | 1: count 3–10 · 2: count to 15, "which has more?" · 3: count to 20, more/fewer, + within 5 · 4: count to 25, + within 10, − within 6 · 5: count to 30, +/− within 10 |
 | 🔤 **Words**: Word ↔ Picture | Reading English & Chinese (pinyin shown) | 1: hear + see an easy word, 2 pictures · 2: 3 pictures · 3: **read** it (not spoken; 🔊 for help) · 4: see a picture, pick the word · 5: same with 4 choices and longer words |
 | 🎈 **Focus**: Tap Only The ___ | Attention, impulse control, listening | 1: 2 balloon colours, slow · 2: 3 colours · 3: 4 colours, faster · 4: sea animals swimming by · 5: the rule **changes halfway** |
@@ -38,7 +47,8 @@ In Chrome, press F12 → the phone icon (device toolbar) → pick a phone and ro
 **Hold the ⚙️ (top-left of home) for 2.5 seconds.** There you can set:
 - Language: English / 中文 / Mixed
 - Rest reminder: Off / 10 / 15 / 20 / 30 min. A sleepy panda pauses the game and asks to rest the eyes; tap OK to continue.
-- Check which voices the phone has (and test them), see progress and levels, and reset progress (hold 🗑️ 3 s).
+- **In adventure**: switch individual games on/off for Today's Adventure (free play on the home screen always shows all games).
+- Check which voices the phone has (and test them), see progress, levels and stickers, and reset progress (hold 🗑️ 3 s).
 
 ---
 
@@ -49,6 +59,9 @@ src/
   main.ts              starts Phaser, lists all scenes (screens)
   data/                ← CONTENT: edit these freely
     words.ts             word list, things to count, balloon colours, sea animals
+    science.ts           animal homes, healthy food, senses, sink/float, weather, life cycles
+    stories.ts           kindness stories
+    stickers.ts          the 40 stickers to collect
     phrases.ts           everything Pan Pan says (praise, try again, …)
     games.ts             list of games shown on home / used by the adventure
   core/                ← shared engine pieces
@@ -64,9 +77,11 @@ src/
     HomeScene.ts         home screen
     PathScene.ts         Today's Adventure path
     ParentScene.ts       Parent Corner
+    StickerScene.ts      Sticker Book
     OverlayScene.ts      rest reminder (always on top)
   games/               ← the mini-games
-    CountScene.ts  WordScene.ts  TapOnlyScene.ts
+    CountScene.ts  WordScene.ts  ScienceScene.ts  MoralScene.ts
+    TapOnlyScene.ts  MemoryScene.ts  PatternScene.ts  SpotScene.ts
 ```
 
 ### Adding content yourself
@@ -75,6 +90,8 @@ src/
   { emoji: '🦒', en: 'giraffe', zh: '长颈鹿', py: 'cháng jǐng lù' },
   ```
 - **New thing to count**: add to `COUNTABLES` with its Chinese measure word (`mw`), e.g. `{ emoji: '🦆', en: 'ducks', zh: '鸭子', mw: '只' }`.
+- **New kindness story**: copy a block in `src/data/stories.ts` (picture, story, kind choice, unkind choice, and what happens after each).
+- **New science question**: add an animal to `ANIMAL_HOMES`, a food to `HEALTHY`/`TREATS`, an item to `SINK_FLOAT`, etc. in `src/data/science.ts`.
 - **More praise lines**: add to `PRAISE` in `src/data/phrases.ts`.
 - **Change how fast the adventure grows**: `pathLength()` in `src/core/save.ts`.
 - **Change what each level contains**: the `LEVELS` table at the top of each game file.
