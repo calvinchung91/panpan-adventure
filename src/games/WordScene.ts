@@ -96,6 +96,7 @@ export class WordScene extends BaseGame {
         radius: 44,
       });
       c.add(txt(this, 0, 0, w.emoji, Math.round(size * 0.6)));
+      this.addSpeaker(c, size, size, [line(w, lang)]); // 🔊 says what this picture is
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);
@@ -126,6 +127,7 @@ export class WordScene extends BaseGame {
         radius: 40,
       });
       c.add(this.wordBlock(w, lang, Math.round(h * 0.42)));
+      this.addSpeaker(c, 680, h, [line(w, lang)]); // 🔊 reads this word aloud
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);
