@@ -7,7 +7,7 @@ import { pickOne } from './rand';
 import { addStars, persist, save, type GameId } from './save';
 import { sfx } from './sfx';
 import { speech, type Line } from './speech';
-import { button, C, confetti, mascot, popIn, pulse, tapCard, txt, wait, wiggle, type TapCard } from './ui';
+import { button, C, confetti, mascot, popIn, pulse, speakerButton, tapCard, txt, wait, wiggle, type TapCard } from './ui';
 import { P, PRAISE, TRY_AGAIN } from '../data/phrases';
 
 export abstract class BaseGame extends Phaser.Scene {
@@ -94,6 +94,11 @@ export abstract class BaseGame extends Phaser.Scene {
 
   protected replay(): void {
     if (this.prompt.length) void this.say(this.prompt);
+  }
+
+  /** Adds a 🔊 to the top-right corner of an answer card that reads its words aloud. */
+  protected addSpeaker(card: TapCard, w: number, h: number, words: Line[]): void {
+    card.add(speakerButton(this, w / 2 - 44, -h / 2 + 44, () => void this.say(words)));
   }
 
   protected speakFor(lines: Line[], maxMs: number): Promise<void> {

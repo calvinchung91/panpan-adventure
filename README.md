@@ -45,6 +45,7 @@ Drag won stickers from the tray onto the picture; drag one back onto the tray to
 | 🔍 **Spot It** | Careful looking & focus | 1: 6 pictures, 1 difference · 2: 9 · 3: 2 differences · 4: 12 pictures · 5: 16 pictures, 3 differences · 6: 20 pictures · 7: 4 differences, one is **subtle** (same picture, smaller) · 8: 25 pictures, 5 differences. After 3 wrong taps, one difference gently pulses |
 
 - In counting tasks he can **tap each object** to count it one by one (it gets a number badge and is spoken). This builds careful, one-at-a-time attention.
+- **🔊 on answer cards** (Science, Kindness): tap it to hear the word read aloud. It never counts as choosing that answer. (Not in the Words game, where reading is the point.)
 - **Wrong answers are gentle**: soft sound, wiggle, the choice turns grey. After 2 misses the right answer pulses as a hint. No "game over".
 - **Stars per round**: 3 ⭐ if every task was right first try, 2 ⭐ for most, 1 ⭐ otherwise (Focus: based on wrong taps).
 - **Difficulty adjusts itself**: 3 first-try successes in a row = level up; 2 misses in a row = level down (Focus: 3 stars = up, 1 star = down).

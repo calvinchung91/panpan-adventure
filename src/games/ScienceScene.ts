@@ -183,6 +183,7 @@ export class ScienceScene extends BaseGame {
       });
       c.add(txt(this, 0, -35, ch.emoji, 140));
       c.add(txt(this, 0, 100, ch.label[lang], 36));
+      this.addSpeaker(c, 290, 300, [line(ch.label, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);

@@ -73,7 +73,8 @@ export class MoralScene extends BaseGame {
         radius: 44,
       });
       c.add(txt(this, 0, -50, o.emoji, 110));
-      c.add(txt(this, 0, 80, o[lang], 38, undefined, { wordWrap: { width: 600 } }));
+      c.add(txt(this, 0, 80, o[lang], 38, undefined, { wordWrap: { width: 560 } }));
+      this.addSpeaker(c, 660, 280, [line(o, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 120);
@@ -104,6 +105,7 @@ export class MoralScene extends BaseGame {
         void this.handleAnswer(c, f === item.feel, cards[options.indexOf(item.feel)], confirm), { radius: 44 });
       c.add(txt(this, 0, -40, fe.emoji, 120));
       c.add(txt(this, 0, 90, fe[lang], 38));
+      this.addSpeaker(c, gap - 30, 280, [line(fe, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 100);
