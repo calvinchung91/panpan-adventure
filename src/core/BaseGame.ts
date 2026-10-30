@@ -176,7 +176,7 @@ export abstract class BaseGame extends Phaser.Scene {
   protected finishRound(stars: number): void {
     this.busy = true;
     addStars(stars);
-    const unlocked = recordStage(this.gameId, this.stage, stars);
+    recordStage(this.gameId, this.stage, stars);
     const { width: W, height: H } = this.scale;
     this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.35).setInteractive().setDepth(100);
     const card = tapCard(this, W / 2, H / 2, 980, 760, null, { radius: 60 }).setDepth(101);
@@ -196,13 +196,12 @@ export abstract class BaseGame extends Phaser.Scene {
     }
     const praise = pickOne(PRAISE);
     card.add(txt(this, 0, 90, modeText(praise), 54));
-    if (unlocked) card.add(txt(this, 0, 170, `🔓 ${oneLine(P.stage(this.stage + 1))}`, 38, '#3a9a5b'));
-    else if (this.stage === STAGES) card.add(txt(this, 0, 170, '🏆 30 / 30', 40, '#3a9a5b'));
+    if (this.stage === STAGES) card.add(txt(this, 0, 170, '🏆 30 / 30', 40, '#3a9a5b'));
     const next = button(this, 0, 280, 340, 140, '▶', () => this.leave(), { fill: C.green, size: 76 });
     card.add(next);
     this.time.delayedCall(1800, () => pulse(this, next, 1.08));
     confetti(this, W / 2, H * 0.45, 120);
-    void this.say([...modeLines(praise), ...modeLines(P.stars(stars)), ...(unlocked ? modeLines(P.nextStage) : [])]);
+    void this.say([...modeLines(praise), ...modeLines(P.stars(stars))]);
   }
 
   private leave(): void {

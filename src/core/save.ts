@@ -25,7 +25,7 @@ export interface SaveData {
 }
 
 export interface StageProgress {
-  unlocked: number; // highest stage he can play (1..30)
+  unlocked: number; // his next stage (1..30): one past the furthest stage he has finished
   stars: number[]; // best stars per stage; stars[0] is stage 1
 }
 
@@ -91,19 +91,17 @@ export function resetProgress(): void {
   persist();
 }
 
-/** The stage he plays next in a game (his highest unlocked stage). */
+/** The stage he plays next in a game (the one after the furthest he has finished). */
 export function nextStage(id: GameId): number {
   return save.stages[id].unlocked;
 }
 
-/** Saves the best stars for a stage and unlocks the next one. Returns true if a new stage was unlocked. */
-export function recordStage(id: GameId, stage: number, stars: number): boolean {
+/** Saves the best stars for a stage and moves his "next stage" past it. All stages are always playable. */
+export function recordStage(id: GameId, stage: number, stars: number): void {
   const p = save.stages[id];
   p.stars[stage - 1] = Math.max(p.stars[stage - 1] ?? 0, stars);
-  const unlockedNew = stage === p.unlocked && p.unlocked < STAGES;
-  if (unlockedNew) p.unlocked++;
+  p.unlocked = Math.max(p.unlocked, Math.min(STAGES, stage + 1));
   persist();
-  return unlockedNew;
 }
 
 export function isEnabled(id: GameId): boolean {

@@ -34,8 +34,8 @@ Drag won stickers from the tray onto the picture; drag one back onto the tray to
 
 ### 30 stages in every game
 Tapping a game on the home screen opens its **stage map** (stages 1–30, best ⭐ shown on each).
-- Finishing a stage **unlocks the next one**; any unlocked stage can be replayed for more stars.
-- Today's Adventure always plays his **next** stage in each game. The home tiles show that number.
+- **All 30 stages are open**: he can pick any stage, and replay any stage for more stars.
+- The **orange** stage is his **next** stage (one past the furthest he has finished). Today's Adventure plays it, and the home tiles show its number.
 - The 30 stages walk through the 8 difficulty settings below (stages 1–4 = setting 1, 5–8 = setting 2, … 27–30 = setting 8),
   with small step-ups between stages of the same setting (bigger numbers in Maths, faster balloons in Focus, shorter peek in Memory).
 
