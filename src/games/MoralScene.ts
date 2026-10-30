@@ -70,13 +70,13 @@ export class MoralScene extends BaseGame {
     const cards: TapCard[] = [];
     options.forEach((o, i) => {
       const kind = o === story.good;
-      const c = tapCard(this, W / 2 + (i === 0 ? -370 : 370), 860, 660, 280, () =>
-        void this.handleAnswer(c, kind, cards[options.indexOf(story.good)], [line(story.goodOut, lang)], [line(story.badOut, lang)]), {
+      const submit = () =>
+        void this.handleAnswer(c, kind, cards[options.indexOf(story.good)], [line(story.goodOut, lang)], [line(story.badOut, lang)]);
+      const c = tapCard(this, W / 2 + (i === 0 ? -370 : 370), 860, 660, 280, () => this.chooseAnswer(c, 660, 280, [line(o, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, -50, o.emoji, 110));
       c.add(txt(this, 0, 80, o[lang], 38, undefined, { wordWrap: { width: 560 } }));
-      this.addSpeaker(c, 660, 280, [line(o, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 120);
@@ -103,11 +103,10 @@ export class MoralScene extends BaseGame {
     const gap = Math.min(330, (W - 200) / options.length);
     options.forEach((f, i) => {
       const fe = FEELINGS[f];
-      const c = tapCard(this, W / 2 + (i - (options.length - 1) / 2) * gap, 860, gap - 30, 280, () =>
-        void this.handleAnswer(c, f === item.feel, cards[options.indexOf(item.feel)], confirm), { radius: 44 });
+      const submit = () => void this.handleAnswer(c, f === item.feel, cards[options.indexOf(item.feel)], confirm);
+      const c = tapCard(this, W / 2 + (i - (options.length - 1) / 2) * gap, 860, gap - 30, 280, () => this.chooseAnswer(c, gap - 30, 280, [line(fe, lang)], submit), { radius: 44 });
       c.add(txt(this, 0, -40, fe.emoji, 120));
       c.add(txt(this, 0, 90, fe[lang], 38));
-      this.addSpeaker(c, gap - 30, 280, [line(fe, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 100);

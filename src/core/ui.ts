@@ -119,25 +119,6 @@ export function button(
   return c;
 }
 
-/**
- * A small round 🔊 button, e.g. in the corner of an answer card. Tapping it only calls onTap;
- * the tap does not reach the card underneath, so it never counts as choosing that answer.
- */
-export function speakerButton(scene: Phaser.Scene, x: number, y: number, onTap: () => void, size = 72): Phaser.GameObjects.Container {
-  const c = scene.add.container(x, y);
-  c.add(scene.add.circle(0, 3, size / 2, shade(C.purple, 30)));
-  c.add(scene.add.circle(0, 0, size / 2, C.purple));
-  c.add(txt(scene, 0, 0, '🔊', Math.round(size * 0.48)));
-  c.setSize(size, size).setInteractive({ useHandCursor: true });
-  c.on('pointerdown', (_p: Phaser.Input.Pointer, _x: number, _y: number, e: Phaser.Types.Input.EventData) => {
-    e.stopPropagation();
-    sfx.tap();
-    scene.tweens.add({ targets: c, scale: 1.2, duration: 90, yoyo: true });
-    onTap();
-  });
-  return c;
-}
-
 /** A button that must be held down (for the parent gate), with a filling ring. */
 export function holdButton(
   scene: Phaser.Scene,

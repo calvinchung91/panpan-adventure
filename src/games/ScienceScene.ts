@@ -52,12 +52,12 @@ export class ScienceScene extends BaseGame {
     const gap = 330;
     q.choices.forEach((ch, i) => {
       const x = W / 2 + (i - (q.choices.length - 1) / 2) * gap;
-      const c = tapCard(this, x, 810, 290, 300, () => void this.handleAnswer(c, i === q.answer, cards[q.answer], [line(q.explain, lang)]), {
+      const submit = () => void this.handleAnswer(c, i === q.answer, cards[q.answer], [line(q.explain, lang)]);
+      const c = tapCard(this, x, 810, 290, 300, () => this.chooseAnswer(c, 290, 300, [line(ch.label, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, -35, ch.emoji, 140));
       c.add(txt(this, 0, 100, ch.label[lang], 36));
-      this.addSpeaker(c, 290, 300, [line(ch.label, lang)]);
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);

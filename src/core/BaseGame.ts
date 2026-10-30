@@ -9,7 +9,7 @@ import { speech, type Line } from './speech';
 import { levelForStage, stageProgress, STAGES } from './stageMath';
 import { music } from './music';
 import type { TrackId } from '../data/music';
-import { button, C, confetti, mascot, popIn, pulse, speakerButton, tapCard, txt, wait, wiggle, type TapCard } from './ui';
+import { button, C, confetti, mascot, popIn, pulse, shade, tapCard, txt, wait, wiggle, type TapCard } from './ui';
 import { GAMES } from '../data/games';
 import { P, PRAISE, TRY_AGAIN } from '../data/phrases';
 
@@ -26,6 +26,7 @@ export abstract class BaseGame extends Phaser.Scene {
   protected prompt: Line[] = [];
   protected layer?: Phaser.GameObjects.Container;
   protected stage = 1;
+  private selected: { card: TapCard; tick: Phaser.GameObjects.Container } | null = null;
   /** Background tune for this game: calm music-box for thinking games (TapOnly/Moral use 'calm'). */
   protected musicTrack: TrackId = 'gentle';
   private dots: Phaser.GameObjects.Arc[] = [];
@@ -87,6 +88,8 @@ export abstract class BaseGame extends Phaser.Scene {
   protected buildTask(): void {}
 
   protected newLayer(): Phaser.GameObjects.Container {
+    if (this.selected) this.tweens.killTweensOf(this.selected.tick);
+    this.selected = null;
     if (this.layer) {
       this.tweens.killTweensOf(this.layer.getAll());
       this.layer.destroy();
@@ -109,9 +112,43 @@ export abstract class BaseGame extends Phaser.Scene {
     if (this.prompt.length) void this.say(this.prompt);
   }
 
-  /** Adds a 🔊 to the top-right corner of an answer card that reads its words aloud. */
-  protected addSpeaker(card: TapCard, w: number, h: number, words: Line[]): void {
-    card.add(speakerButton(this, w / 2 - 44, -h / 2 + 44, () => void this.say(words)));
+  /**
+   * Tap-to-choose (Words, Science, Kindness): tapping an answer reads it aloud and highlights it,
+   * and a green ✔ appears on it. Only tapping ✔ submits the answer. Tapping another answer moves the choice.
+   */
+  protected chooseAnswer(card: TapCard, w: number, h: number, read: Line[], submit: () => void): void {
+    if (this.busy) return;
+    void this.say(read);
+    if (this.selected?.card === card) return; // tapped again: just read it again
+    this.clearSelection();
+    card.paint(0xfff1b8);
+    this.tweens.add({ targets: card, scale: 1.05, duration: 120 });
+    const tick = this.add.container(w / 2 - 48, -h / 2 + 48);
+    tick.add(this.add.circle(0, 4, 46, shade(C.green, 30)));
+    tick.add(this.add.circle(0, 0, 46, C.green).setStrokeStyle(5, 0xffffff));
+    tick.add(txt(this, 0, 0, '✔', 50, '#ffffff'));
+    tick.setSize(100, 100).setInteractive({ useHandCursor: true });
+    tick.on('pointerdown', (_p: Phaser.Input.Pointer, _x: number, _y: number, e: Phaser.Types.Input.EventData) => {
+      e.stopPropagation(); // the tap belongs to ✔, not to the card underneath
+      sfx.tap();
+      submit();
+    });
+    card.add(tick);
+    popIn(this, tick);
+    this.time.delayedCall(400, () => tick.active && pulse(this, tick, 1.15));
+    this.selected = { card, tick };
+  }
+
+  private clearSelection(): void {
+    if (!this.selected) return;
+    const { card, tick } = this.selected;
+    this.selected = null;
+    this.tweens.killTweensOf(tick);
+    tick.destroy();
+    if (card.active) {
+      card.paint(C.white);
+      this.tweens.add({ targets: card, scale: 1, duration: 120 });
+    }
   }
 
   protected speakFor(lines: Line[], maxMs: number): Promise<void> {
@@ -125,6 +162,7 @@ export abstract class BaseGame extends Phaser.Scene {
    */
   protected async handleAnswer(card: TapCard, ok: boolean, correct: TapCard, confirm: Line[], wrongLines?: Line[]): Promise<void> {
     if (this.busy) return;
+    this.clearSelection();
     if (!ok) {
       this.attempts++;
       sfx.wrong();

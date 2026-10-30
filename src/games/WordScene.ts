@@ -92,11 +92,11 @@ export class WordScene extends BaseGame {
     const cards: TapCard[] = [];
     options.forEach((w, i) => {
       const x = W / 2 + (i - (options.length - 1) / 2) * gap;
-      const c = tapCard(this, x, 790, size, size, () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm), {
+      const submit = () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm);
+      const c = tapCard(this, x, 790, size, size, () => this.chooseAnswer(c, size, size, [line(w, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, 0, w.emoji, Math.round(size * 0.6)));
-      this.addSpeaker(c, size, size, [line(w, lang)]); // 🔊 says what this picture is
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);
@@ -123,11 +123,11 @@ export class WordScene extends BaseGame {
     const cards: TapCard[] = [];
     options.forEach((w, i) => {
       const y = 620 + (i - (n - 1) / 2) * gap;
-      const c = tapCard(this, W * 0.7, y, 680, h, () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm), {
+      const submit = () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm);
+      const c = tapCard(this, W * 0.7, y, 680, h, () => this.chooseAnswer(c, 680, h, [line(w, lang)], submit), {
         radius: 40,
       });
       c.add(this.wordBlock(w, lang, Math.round(h * 0.42)));
-      this.addSpeaker(c, 680, h, [line(w, lang)]); // 🔊 reads this word aloud
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 150 + i * 100);
