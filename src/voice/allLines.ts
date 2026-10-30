@@ -68,10 +68,9 @@ export function allLines(): Line[] {
   for (let k = 1; k <= 5; k++) bi(S.spotPrompt(k));
 
   // Map & stages
-  WORLDS.forEach((w, i) => {
+  WORLDS.forEach((w) => {
     for (let s = 1; s <= STAGES_PER_WORLD; s++) [S.mapExplore(w.name, s, STAGES_PER_WORLD), S.stageDone(w.icon, s, STAGES_PER_WORLD)].forEach(bi);
-    [S.mapFinished(w.name), S.newWorld(w.icon, w.name)].forEach(bi);
-    if (i > 0) bi(S.mapLocked(WORLDS[i - 1].name));
+    bi(S.mapFinished(w.name));
   });
   [S.mapAllDone, S.allWorldsDone].forEach(bi);
 

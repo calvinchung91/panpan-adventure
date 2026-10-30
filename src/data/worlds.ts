@@ -1,8 +1,8 @@
 // ─── Adventure worlds (the stage map) ────────────────────────────────────
-// Each finished Today's Adventure completes one stage. Finish all stages of a world to unlock
-// the next one. bg = background style, decor = little pictures along the bottom of the path.
+// Every world is open: he picks a world on the map, and each finished adventure there completes
+// one of its 5 stages. bg = background style, decor = little pictures along the bottom of the path.
 import type { Bi } from '../core/lang';
-import { save } from '../core/save';
+import { persist, save } from '../core/save';
 import type { BgKind } from '../core/ui';
 import type { TrackId } from './music';
 
@@ -26,9 +26,37 @@ export const WORLDS: World[] = [
   { icon: '🚀', name: { en: 'Space', zh: '太空' }, bg: 'space', color: 0x4b3fa0, decor: ['🪐', '👽', '🛸', '🌙', '⭐'], music: 'space' },
 ];
 
-/** Where he is on the map, worked out from how many adventures he has finished. */
-export function worldProgress(done = save.adventuresDone): { world: number; stage: number; allDone: boolean } {
-  const world = Math.floor(done / STAGES_PER_WORLD);
-  if (world >= WORLDS.length) return { world: WORLDS.length - 1, stage: STAGES_PER_WORLD, allDone: true };
-  return { world, stage: done % STAGES_PER_WORLD, allDone: false };
+/** Stages finished in each world. Older saves only counted adventures, so they are filled in world by world. */
+export function worldStages(): number[] {
+  if (!save.worldStages || save.worldStages.length !== WORLDS.length) {
+    const old = save.worldStages ?? [];
+    save.worldStages = WORLDS.map(
+      (_, i) => old[i] ?? Math.max(0, Math.min(STAGES_PER_WORLD, save.adventuresDone - i * STAGES_PER_WORLD)),
+    );
+  }
+  return save.worldStages;
+}
+
+/** The world the map suggests next (shown glowing): the first one not finished yet. */
+export function suggestedWorld(): number {
+  const i = worldStages().findIndex((n) => n < STAGES_PER_WORLD);
+  return i === -1 ? WORLDS.length - 1 : i;
+}
+
+export function allWorldsDone(): boolean {
+  return worldStages().every((n) => n >= STAGES_PER_WORLD);
+}
+
+/** Counts a finished adventure in a world. Says whether that finished the world, or every world. */
+export function completeWorldStage(world: number): { stage: number; finishedWorld: boolean; finishedAll: boolean } {
+  const ws = worldStages();
+  const wasAll = allWorldsDone();
+  const before = ws[world];
+  ws[world] = Math.min(STAGES_PER_WORLD, before + 1);
+  persist();
+  return {
+    stage: ws[world],
+    finishedWorld: before < STAGES_PER_WORLD && ws[world] === STAGES_PER_WORLD,
+    finishedAll: !wasAll && allWorldsDone(),
+  };
 }

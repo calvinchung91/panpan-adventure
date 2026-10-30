@@ -8,7 +8,7 @@ import { speech } from '../core/speech';
 import { background, button, C, holdButton, mascot, pulse, tapCard, txt } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { HELLO, P } from '../data/phrases';
-import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
+import { STAGES_PER_WORLD, suggestedWorld, WORLDS, worldStages } from '../data/worlds';
 
 export class HomeScene extends Phaser.Scene {
   constructor() {
@@ -31,8 +31,9 @@ export class HomeScene extends Phaser.Scene {
     });
 
     const path = save.currentPath;
-    const prog = worldProgress();
-    const where = `${WORLDS[prog.world].icon} ${prog.allDone ? '✅' : `${prog.stage + 1}/${STAGES_PER_WORLD}`}`;
+    const wi = path?.world ?? suggestedWorld(); // the world of the adventure in progress, or the suggested one
+    const wDone = worldStages()[wi];
+    const where = `${WORLDS[wi].icon} ${wDone >= STAGES_PER_WORLD ? '✅' : `${wDone + 1}/${STAGES_PER_WORLD}`}`;
     const inProgress = !!path && path.index > 0;
     const label = inProgress
       ? `▶  ${P.continueAdventure.en}  ${path!.index}/${path!.games.length}\n${P.continueAdventure.zh}  ·  ${where}`

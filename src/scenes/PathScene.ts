@@ -2,7 +2,7 @@
 // focus goal; the path grows longer as your child completes them (see pathLength in save.ts).
 import Phaser from 'phaser';
 import { music } from '../core/music';
-import { modeLines, modeText, type Bi } from '../core/lang';
+import { modeLines, modeText, oneLine, type Bi } from '../core/lang';
 import { pickOne, shuffle } from '../core/rand';
 import { isEnabled, pathLength, persist, save, type GameId } from '../core/save';
 import { sfx } from '../core/sfx';
@@ -12,7 +12,7 @@ import { GAMES, GAME_IDS } from '../data/games';
 import { P } from '../data/phrases';
 import { S } from '../data/sentences';
 import { awardSticker } from '../data/stickers';
-import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
+import { completeWorldStage, STAGES_PER_WORLD, suggestedWorld, WORLDS, worldStages } from '../data/worlds';
 
 /** Picks games (only those switched on in Parent Corner), all different where possible, never the same twice in a row. */
 function makePath(len: number): GameId[] {
@@ -27,32 +27,38 @@ function makePath(len: number): GameId[] {
 
 export class PathScene extends Phaser.Scene {
   private advanced = false;
+  private asked?: number; // world picked on the map
+  private world = 0;
 
   constructor() {
     super('Path');
   }
 
-  init(data?: { advanced?: boolean }): void {
+  init(data?: { advanced?: boolean; world?: number }): void {
     this.advanced = !!data?.advanced;
+    this.asked = data?.world;
   }
 
   create(): void {
     const { width: W } = this.scale;
-    const prog = worldProgress();
-    const world = WORLDS[prog.world];
+    // picking a different world on the map starts a fresh adventure there
+    const cur = save.currentPath;
+    if (cur && this.asked !== undefined && cur.world !== undefined && cur.world !== this.asked) save.currentPath = null;
+    this.world = this.asked ?? save.currentPath?.world ?? suggestedWorld();
+    const world = WORLDS[this.world];
     background(this, world.bg, world.decor);
     music.play(world.music);
-    if (!save.currentPath) {
-      save.currentPath = { games: makePath(pathLength()), index: 0 };
-      persist();
-    }
+    if (!save.currentPath) save.currentPath = { games: makePath(pathLength()), index: 0 };
+    save.currentPath.world = this.world;
+    persist();
     const path = save.currentPath;
     const n = path.games.length;
     const idx = path.index;
 
     button(this, 95, 85, 140, 120, '🗺️', () => this.leave('Map'), { fill: C.blue, size: 60 });
-    const stage = prog.allDone ? '' : `  ·  ${Math.min(prog.stage + 1, STAGES_PER_WORLD)}/${STAGES_PER_WORLD}`;
-    txt(this, W / 2, 105, `${world.icon} ${modeText(world.name).replace('\n', ' · ')}${stage}`, 54).setStroke('#ffffff', 8);
+    const done = worldStages()[this.world];
+    const stage = done >= STAGES_PER_WORLD ? '  ✅' : `  ·  ${done + 1}/${STAGES_PER_WORLD}`;
+    txt(this, W / 2, 105, `${world.icon} ${oneLine(world.name)}${stage}`, 54).setStroke('#ffffff', 8);
 
     // stop positions along a gentle wave, plus a trophy at the end
     const total = n + 1;
@@ -124,24 +130,18 @@ export class PathScene extends Phaser.Scene {
   private async complete(token: Phaser.GameObjects.Text): Promise<void> {
     const { width: W, height: H } = this.scale;
     const before = pathLength();
-    const worldBefore = worldProgress();
     save.stars += 5;
     save.adventuresDone++;
     save.currentPath = null;
     persist();
     const longer = pathLength() > before;
-    const worldAfter = worldProgress();
-    // stage message: a new world unlocked, every world finished, or just "stage 3/5 done"
+    // stage message: every world finished, this world finished, or just "stage 3/5 done"
+    const w = WORLDS[this.world];
+    const r = completeWorldStage(this.world);
     let stageMsg: Bi | null = null;
-    if (worldAfter.allDone && !worldBefore.allDone) {
-      stageMsg = S.allWorldsDone;
-    } else if (worldAfter.world > worldBefore.world) {
-      const nw = WORLDS[worldAfter.world];
-      stageMsg = S.newWorld(nw.icon, nw.name);
-    } else if (!worldAfter.allDone) {
-      const w = WORLDS[worldAfter.world];
-      stageMsg = S.stageDone(w.icon, worldAfter.stage, STAGES_PER_WORLD);
-    }
+    if (r.finishedAll) stageMsg = S.allWorldsDone;
+    else if (r.finishedWorld) stageMsg = S.mapFinished(w.name);
+    else if (r.stage < STAGES_PER_WORLD) stageMsg = S.stageDone(w.icon, r.stage, STAGES_PER_WORLD);
 
     sfx.tada();
     this.tweens.add({ targets: token, scale: 1.4, duration: 300, yoyo: true, repeat: 2 });

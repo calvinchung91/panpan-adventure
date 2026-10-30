@@ -7,7 +7,7 @@ import { speech } from '../core/speech';
 import { button, C, holdButton, txt } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { STICKERS } from '../data/stickers';
-import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
+import { STAGES_PER_WORLD, WORLDS, worldStages } from '../data/worlds';
 import { STAGES } from '../core/stageMath';
 
 export class ParentScene extends Phaser.Scene {
@@ -67,16 +67,13 @@ export class ParentScene extends Phaser.Scene {
 
     label(860, 'Progress');
     const lv = GAME_IDS.map((id) => `${GAMES[id].name.en} ${save.stages[id].unlocked}/${STAGES}`);
-    const prog = worldProgress();
-    const world = prog.allDone
-      ? 'all worlds done ✅'
-      : `${WORLDS[prog.world].icon} ${WORLDS[prog.world].name.en}, stage ${prog.stage + 1}/${STAGES_PER_WORLD}`;
+    const world = worldStages().map((n, i) => `${WORLDS[i].icon}${n}/${STAGES_PER_WORLD}`).join(' ');
     txt(
       this,
       col,
       862,
       `⭐ ${save.stars} stars   🏆 ${save.adventuresDone} adventures   📒 ${save.stickers.owned.length}/${STICKERS.length} stickers\n` +
-        `World: ${world}   Adventure length: ${pathLength()} games\n` +
+        `Worlds: ${world}   Adventure length: ${pathLength()} games\n` +
         `Stages:  ${lv.slice(0, 4).join('   ')}\n           ${lv.slice(4).join('   ')}`,
       28,
       '#2b3a55',

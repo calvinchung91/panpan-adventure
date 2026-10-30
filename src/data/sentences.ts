@@ -54,9 +54,7 @@ export const S = {
     zh: `我们去${w.zh}探险吧！第${stage}关，一共${of}关。`,
   }),
   mapAllDone: { en: 'You finished every world! You can keep playing in Space.', zh: '你完成了所有的世界！可以继续在太空冒险。' } as Bi,
-  mapLocked: (prev: Named): Bi => ({ en: `Finish the ${prev.en} first to unlock it!`, zh: `先完成${prev.zh}，就能解锁哦！` }),
   mapFinished: (w: Named): Bi => ({ en: `You finished the ${w.en}! Great job!`, zh: `你完成了${w.zh}！真棒！` }),
-  newWorld: (icon: string, w: Named): Bi => ({ en: `🎉 New world unlocked: ${icon} ${w.en}!`, zh: `🎉 解锁新世界：${icon} ${w.zh}！` }),
   allWorldsDone: { en: '🎉 You finished every world!', zh: '🎉 你完成了所有的世界！' } as Bi,
   stageDone: (icon: string, stage: number, of: number): Bi => ({
     en: `${icon} Stage ${stage} of ${of} done!`,

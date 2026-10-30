@@ -20,7 +20,8 @@ export interface SaveData {
   stars: number;
   adventuresDone: number;
   stages: Record<GameId, StageProgress>; // 30 stages per game
-  currentPath: { games: GameId[]; index: number } | null; // today's adventure in progress
+  currentPath: { games: GameId[]; index: number; world?: number } | null; // today's adventure in progress
+  worldStages?: number[]; // adventure map: stages finished in each world (0..5); filled in by data/worlds.ts
   stickers: { owned: string[]; placed: PlacedSticker[] };
 }
 

@@ -24,10 +24,11 @@ In Chrome, press F12 → the phone icon (device toolbar) → pick a phone and ro
 
 ### Adventure Map (stages)
 Tapping "Today's Adventure" opens the **🗺️ map**: 6 worlds with **5 stages** each:
-🚜 Farm → 🌳 Forest → 🌊 Sea → ❄️ Snowland → 🌵 Desert → 🚀 Space.
-- Each finished adventure completes one stage (a ⭐ on the map). Finishing all 5 stages **unlocks the next world** 🎉.
-- The adventure path takes on the current world's look (forest trees, falling snow, stars in space…).
-- After all 30 stages he can keep playing adventures in Space.
+🚜 Farm · 🌳 Forest · 🌊 Sea · ❄️ Snowland · 🌵 Desert · 🚀 Space.
+- **All worlds are open**: he taps any world to play an adventure there. Each finished adventure gives that world one stage ⭐.
+- The glowing world is just a suggestion: the first world not finished yet. Finishing all 5 stages of a world earns a ✅ 🎉.
+- The adventure path takes on that world's look and music (forest trees, falling snow, stars in space…).
+- Finished worlds can still be played for fun.
 
 ### Sticker Book (📒 on the home screen)
 Drag won stickers from the tray onto the picture; drag one back onto the tray to remove it. Positions are saved.
