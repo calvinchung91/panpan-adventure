@@ -1,0 +1,27 @@
+import Phaser from 'phaser';
+import { BootScene } from './scenes/BootScene';
+import { HomeScene } from './scenes/HomeScene';
+import { PathScene } from './scenes/PathScene';
+import { ParentScene } from './scenes/ParentScene';
+import { OverlayScene } from './scenes/OverlayScene';
+import { CountScene } from './games/CountScene';
+import { WordScene } from './games/WordScene';
+import { TapOnlyScene } from './games/TapOnlyScene';
+
+// The game is always 1080 tall; the width follows the phone's shape so wide phones have no black bars.
+const H = 1080;
+const aspect = Math.max(innerWidth, innerHeight) / Math.min(innerWidth, innerHeight);
+const W = Math.round(Phaser.Math.Clamp(H * aspect, 1728, 2520));
+
+const game = new Phaser.Game({
+  type: Phaser.AUTO,
+  parent: 'game',
+  backgroundColor: '#bfe9ff',
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: W, height: H },
+  input: { activePointers: 3 },
+  // Order matters: Overlay is last so it always draws on top.
+  scene: [BootScene, HomeScene, PathScene, ParentScene, CountScene, WordScene, TapOnlyScene, OverlayScene],
+});
+
+// handy for debugging in the browser console during development only
+if (import.meta.env.DEV) (window as unknown as { game: Phaser.Game }).game = game;

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#7cc8f0" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <title>Pan Pan's Adventure</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #bfe9ff; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; }
+      #game { width: 100%; height: 100%; }
+      #rotate { display: none; position: fixed; inset: 0; background: #bfe9ff; color: #2b3a55; font: bold 24px sans-serif; text-align: center; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
+      #rotate .icon { font-size: 96px; }
+      @media (orientation: portrait) { #rotate { display: flex; } }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="rotate">
+      <div class="icon">📱↻</div>
+      <div>Please turn the phone sideways<br />请把手机横过来</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
