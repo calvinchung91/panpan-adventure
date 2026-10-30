@@ -9,7 +9,7 @@ import { speech, type Line } from './speech';
 import { levelForStage, stageProgress, STAGES } from './stageMath';
 import { music } from './music';
 import type { TrackId } from '../data/music';
-import { button, C, confetti, mascot, popIn, pulse, shade, tapCard, txt, wait, wiggle, type TapCard } from './ui';
+import { button, C, confetti, mascot, popIn, pulse, tapCard, txt, wait, wiggle, type TapCard } from './ui';
 import { GAMES } from '../data/games';
 import { P, PRAISE, TRY_AGAIN } from '../data/phrases';
 
@@ -26,7 +26,9 @@ export abstract class BaseGame extends Phaser.Scene {
   protected prompt: Line[] = [];
   protected layer?: Phaser.GameObjects.Container;
   protected stage = 1;
-  private selected: { card: TapCard; tick: Phaser.GameObjects.Container } | null = null;
+  private selected: { card: TapCard; submit: () => void } | null = null;
+  private submitBtn?: TapCard;
+  private submitPulse?: Phaser.Tweens.Tween;
   /** Background tune for this game: calm music-box for thinking games (TapOnly/Moral use 'calm'). */
   protected musicTrack: TrackId = 'gentle';
   private dots: Phaser.GameObjects.Arc[] = [];
@@ -88,8 +90,9 @@ export abstract class BaseGame extends Phaser.Scene {
   protected buildTask(): void {}
 
   protected newLayer(): Phaser.GameObjects.Container {
-    if (this.selected) this.tweens.killTweensOf(this.selected.tick);
     this.selected = null;
+    this.submitBtn = undefined;
+    this.submitPulse = undefined;
     if (this.layer) {
       this.tweens.killTweensOf(this.layer.getAll());
       this.layer.destroy();
@@ -113,42 +116,71 @@ export abstract class BaseGame extends Phaser.Scene {
   }
 
   /**
-   * Tap-to-choose (Words, Science, Kindness): tapping an answer reads it aloud and highlights it,
-   * and a green ✔ appears on it. Only tapping ✔ submits the answer. Tapping another answer moves the choice.
+   * Choose, then submit (Words, Science, Kindness): tapping an answer reads it aloud and highlights it;
+   * the big ✔ OK button beside the answers then turns green, and tapping it checks the answer.
+   * Tapping another answer moves the choice.
    */
-  protected chooseAnswer(card: TapCard, w: number, h: number, read: Line[], submit: () => void): void {
+  protected chooseAnswer(card: TapCard, read: Line[], submit: () => void): void {
     if (this.busy) return;
     void this.say(read);
     if (this.selected?.card === card) return; // tapped again: just read it again
     this.clearSelection();
     card.paint(0xfff1b8);
     this.tweens.add({ targets: card, scale: 1.05, duration: 120 });
-    const tick = this.add.container(w / 2 - 48, -h / 2 + 48);
-    tick.add(this.add.circle(0, 4, 46, shade(C.green, 30)));
-    tick.add(this.add.circle(0, 0, 46, C.green).setStrokeStyle(5, 0xffffff));
-    tick.add(txt(this, 0, 0, '✔', 50, '#ffffff'));
-    tick.setSize(100, 100).setInteractive({ useHandCursor: true });
-    tick.on('pointerdown', (_p: Phaser.Input.Pointer, _x: number, _y: number, e: Phaser.Types.Input.EventData) => {
-      e.stopPropagation(); // the tap belongs to ✔, not to the card underneath
-      sfx.tap();
-      submit();
-    });
-    card.add(tick);
-    popIn(this, tick);
-    this.time.delayedCall(400, () => tick.active && pulse(this, tick, 1.15));
-    this.selected = { card, tick };
+    this.selected = { card, submit };
+    if (this.submitBtn) {
+      this.submitBtn.paint(C.green);
+      this.submitPulse = pulse(this, this.submitBtn, 1.06);
+    }
   }
 
   private clearSelection(): void {
+    if (this.submitBtn?.active) {
+      this.submitPulse?.stop();
+      this.submitBtn.setScale(1).paint(C.grey);
+    }
+    this.submitPulse = undefined;
     if (!this.selected) return;
-    const { card, tick } = this.selected;
+    const { card } = this.selected;
     this.selected = null;
-    this.tweens.killTweensOf(tick);
-    tick.destroy();
     if (card.active) {
       card.paint(C.white);
       this.tweens.add({ targets: card, scale: 1, duration: 120 });
     }
+  }
+
+  /** The big ✔ OK button. Grey until an answer is chosen; tapping it checks the chosen answer. */
+  protected addSubmit(x: number, y: number, w: number, h: number): void {
+    const b = tapCard(this, x, y, w, h, () => this.onSubmit(), { fill: C.grey, radius: 44 });
+    b.add(txt(this, 0, -h * 0.12, '✔', Math.min(120, Math.round(h * 0.42)), '#ffffff').setShadow(0, 3, 'rgba(0,0,0,0.25)', 4));
+    b.add(txt(this, 0, h * 0.28, `${P.ok.en} · ${P.ok.zh}`, Math.min(40, Math.round(w * 0.13)), '#ffffff').setShadow(0, 3, 'rgba(0,0,0,0.25)', 4));
+    this.layer!.add(b);
+    popIn(this, b, 300);
+    this.submitBtn = b;
+  }
+
+  private onSubmit(): void {
+    if (this.busy) return;
+    if (!this.selected) {
+      wiggle(this, this.submitBtn!); // nothing chosen yet
+      return;
+    }
+    this.selected.submit();
+  }
+
+  /**
+   * Lays out n answer cards in a row, leaving room for the big ✔ OK button on the right (added here).
+   * Returns the x of each card and the card width (never wider than maxW). h defaults to square cards.
+   */
+  protected answerRow(n: number, maxW: number, y: number, h?: number): { xs: number[]; w: number } {
+    const W = this.scale.width;
+    const subW = 300, gap = 40;
+    const left = 110, right = W - 110 - subW - 50;
+    const w = Math.min(maxW, (right - left - (n - 1) * gap) / n);
+    const total = n * w + (n - 1) * gap;
+    const x0 = left + (right - left - total) / 2 + w / 2;
+    this.addSubmit(W - 110 - subW / 2, y, subW, h ?? w);
+    return { xs: Array.from({ length: n }, (_, i) => x0 + i * (w + gap)), w };
   }
 
   protected speakFor(lines: Line[], maxMs: number): Promise<void> {

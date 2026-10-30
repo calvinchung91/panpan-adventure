@@ -49,11 +49,10 @@ export class ScienceScene extends BaseGame {
     popIn(this, pic);
 
     const cards: TapCard[] = [];
-    const gap = 330;
+    const { xs, w } = this.answerRow(q.choices.length, 290, 810, 300);
     q.choices.forEach((ch, i) => {
-      const x = W / 2 + (i - (q.choices.length - 1) / 2) * gap;
       const submit = () => void this.handleAnswer(c, i === q.answer, cards[q.answer], [line(q.explain, lang)]);
-      const c = tapCard(this, x, 810, 290, 300, () => this.chooseAnswer(c, 290, 300, [line(ch.label, lang)], submit), {
+      const c = tapCard(this, xs[i], 810, w, 300, () => this.chooseAnswer(c, [line(ch.label, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, -35, ch.emoji, 140));

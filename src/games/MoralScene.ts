@@ -67,16 +67,17 @@ export class MoralScene extends BaseGame {
     this.layer!.add(txt(this, W / 2, 640, STORY_QUESTION[lang], 48));
 
     const options = shuffle([story.good, story.bad]);
+    const row = this.answerRow(2, 660, 860, 280);
     const cards: TapCard[] = [];
     options.forEach((o, i) => {
       const kind = o === story.good;
       const submit = () =>
         void this.handleAnswer(c, kind, cards[options.indexOf(story.good)], [line(story.goodOut, lang)], [line(story.badOut, lang)]);
-      const c = tapCard(this, W / 2 + (i === 0 ? -370 : 370), 860, 660, 280, () => this.chooseAnswer(c, 660, 280, [line(o, lang)], submit), {
+      const c = tapCard(this, row.xs[i], 860, row.w, 280, () => this.chooseAnswer(c, [line(o, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, -50, o.emoji, 110));
-      c.add(txt(this, 0, 80, o[lang], 38, undefined, { wordWrap: { width: 560 } }));
+      c.add(txt(this, 0, 80, o[lang], 38, undefined, { wordWrap: { width: row.w - 50 } }));
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 120);
@@ -100,13 +101,13 @@ export class MoralScene extends BaseGame {
     const answer = FEELINGS[item.feel];
     const confirm = [line(S.feelConfirm(answer), lang)];
     const cards: TapCard[] = [];
-    const gap = Math.min(330, (W - 200) / options.length);
+    const { xs, w } = this.answerRow(options.length, 300, 860, 280);
     options.forEach((f, i) => {
       const fe = FEELINGS[f];
       const submit = () => void this.handleAnswer(c, f === item.feel, cards[options.indexOf(item.feel)], confirm);
-      const c = tapCard(this, W / 2 + (i - (options.length - 1) / 2) * gap, 860, gap - 30, 280, () => this.chooseAnswer(c, gap - 30, 280, [line(fe, lang)], submit), { radius: 44 });
-      c.add(txt(this, 0, -40, fe.emoji, 120));
-      c.add(txt(this, 0, 90, fe[lang], 38));
+      const c = tapCard(this, xs[i], 860, w, 280, () => this.chooseAnswer(c, [line(fe, lang)], submit), { radius: 44 });
+      c.add(txt(this, 0, -40, fe.emoji, Math.min(120, Math.round(w * 0.55))));
+      c.add(txt(this, 0, 90, fe[lang], w < 240 ? 32 : 38));
       cards.push(c);
       this.layer!.add(c);
       popIn(this, c, 300 + i * 100);

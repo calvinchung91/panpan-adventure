@@ -53,7 +53,7 @@ Tapping a game on the home screen opens its **stage map** (stages 1–30, best �
 | 🔍 **Spot It** | Careful looking & focus | 1: 6 pictures, 1 difference · 2: 9 · 3: 2 differences · 4: 12 pictures · 5: 16 pictures, 3 differences · 6: 20 pictures · 7: 4 differences, one is **subtle** (same picture, smaller) · 8: 25 pictures, 5 differences. After 3 wrong taps, one difference gently pulses |
 
 - In counting tasks he can **tap each object** to count it one by one (it gets a number badge and is spoken). This builds careful, one-at-a-time attention.
-- **Choose, then ✔** (Words, Science, Kindness): tapping an answer reads it aloud and highlights it, and a green ✔ appears on it. Only tapping ✔ submits; tapping another answer changes the choice. (Maths, Patterns, Focus, Memory and Spot It answer with a single tap.)
+- **Choose, then ✔ OK** (Words, Science, Kindness): tapping an answer reads it aloud and highlights it. The big ✔ OK button beside the answers is grey until he chooses, then turns green; tapping it checks the answer. Tapping another answer changes the choice. (Maths, Patterns, Focus, Memory and Spot It answer with a single tap.)
 - **Wrong answers are gentle**: soft sound, wiggle, the choice turns grey. After 2 misses the right answer pulses as a hint. No "game over".
 - **Stars per round**: 3 ⭐ if every task was right first try, 2 ⭐ for most, 1 ⭐ otherwise (Focus: based on wrong taps).
 - **Mixed language mode**: tasks alternate English / Chinese, and after a right answer the word is said in both.

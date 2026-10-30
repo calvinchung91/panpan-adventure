@@ -87,13 +87,11 @@ export class WordScene extends BaseGame {
       this.layer!.add(help);
     }
 
-    const size = options.length === 2 ? 340 : 300;
-    const gap = size + 70;
+    const { xs, w: size } = this.answerRow(options.length, options.length === 2 ? 340 : 300, 790);
     const cards: TapCard[] = [];
     options.forEach((w, i) => {
-      const x = W / 2 + (i - (options.length - 1) / 2) * gap;
       const submit = () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm);
-      const c = tapCard(this, x, 790, size, size, () => this.chooseAnswer(c, size, size, [line(w, lang)], submit), {
+      const c = tapCard(this, xs[i], 790, size, size, () => this.chooseAnswer(c, [line(w, lang)], submit), {
         radius: 44,
       });
       c.add(txt(this, 0, 0, w.emoji, Math.round(size * 0.6)));
@@ -112,19 +110,22 @@ export class WordScene extends BaseGame {
   private pictureToWord(target: Word, options: Word[], confirm: Line[]): void {
     const W = this.scale.width;
     const lang = this.lang;
-    const pic = tapCard(this, W * 0.3, 620, 520, 520, null, { radius: 60 });
-    pic.add(txt(this, 0, 0, target.emoji, 320));
+    // picture on the left, words in the middle, the big ✔ OK on the right
+    const pic = tapCard(this, 330, 620, 440, 440, null, { radius: 60 });
+    pic.add(txt(this, 0, 0, target.emoji, 270));
     this.layer!.add(pic);
     popIn(this, pic);
 
     const n = options.length;
     const h = n === 3 ? 220 : n === 4 ? 175 : 140;
     const gap = h + (n === 5 ? 20 : 30);
+    const wordLeft = 600, wordW = Math.min(640, W - 110 - 300 - 50 - wordLeft);
+    this.addSubmit(W - 110 - 150, 620, 300, 340);
     const cards: TapCard[] = [];
     options.forEach((w, i) => {
       const y = 620 + (i - (n - 1) / 2) * gap;
       const submit = () => void this.handleAnswer(c, w === target, cards[options.indexOf(target)], confirm);
-      const c = tapCard(this, W * 0.7, y, 680, h, () => this.chooseAnswer(c, 680, h, [line(w, lang)], submit), {
+      const c = tapCard(this, wordLeft + wordW / 2, y, wordW, h, () => this.chooseAnswer(c, [line(w, lang)], submit), {
         radius: 40,
       });
       c.add(this.wordBlock(w, lang, Math.round(h * 0.42)));
