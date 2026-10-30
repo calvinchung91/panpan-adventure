@@ -1,6 +1,7 @@
 // Always runs on top of everything. Shows the rest reminder after the time set in Parent Corner,
 // pausing whatever game is running until someone taps OK.
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines, modeText } from '../core/lang';
 import { save } from '../core/save';
 import { speech } from '../core/speech';
@@ -31,6 +32,7 @@ export class OverlayScene extends Phaser.Scene {
     const paused = this.scene.manager.getScenes(true).filter((s) => s !== this);
     paused.forEach((s) => this.scene.pause(s.scene.key));
     speech.stop();
+    music.setResting(true);
 
     const { width: W, height: H } = this.scale;
     const dim = this.add.rectangle(W / 2, H / 2, W, H, 0x1b2a4a, 0.6).setInteractive();
@@ -43,6 +45,7 @@ export class OverlayScene extends Phaser.Scene {
         card.destroy();
         paused.forEach((s) => this.scene.resume(s.scene.key));
         this.showing = false;
+        music.setResting(false);
         this.lastRest = Date.now();
       }, { fill: C.green, size: 52 }),
     );

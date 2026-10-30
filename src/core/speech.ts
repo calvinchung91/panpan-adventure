@@ -3,6 +3,7 @@
 // (Google TTS on Android: an en-US voice for English, a Mandarin zh-CN voice for Chinese).
 import type { Lang } from './lang';
 import { cleanSpeech, voiceKey } from '../voice/key';
+import { music } from './music';
 
 export interface Line {
   text: string;
@@ -74,13 +75,18 @@ class Speech {
     const synth = this.synth;
     if (lines.length === 0) return Promise.resolve();
     const my = ++this.token;
+    music.setSpeaking(true);
     synth?.cancel();
     this.audio?.pause();
     this.keep = [];
     return new Promise((resolve) => {
       let i = 0;
       const next = () => {
-        if (my !== this.token || i >= lines.length) return resolve();
+        if (my !== this.token) return resolve();
+        if (i >= lines.length) {
+          music.setSpeaking(false);
+          return resolve();
+        }
         const l = lines[i++];
         const text = cleanSpeech(l.text); // never read emoji aloud ("party popper"…)
         if (!text) return next();
@@ -140,6 +146,7 @@ class Speech {
 
   stop(): void {
     this.token++;
+    music.setSpeaking(false);
     this.synth?.cancel();
     this.audio?.pause();
   }

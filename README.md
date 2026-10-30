@@ -78,6 +78,7 @@ src/
     stickers.ts          the 40 stickers to collect
     worlds.ts            the 6 map worlds (name, look, decorations) and 5 stages per world
     phrases.ts           everything Pan Pan says (praise, try again, …)
+    music.ts             the background tunes, written as notes
     games.ts             list of games shown on home / used by the adventure
   core/                ← shared engine pieces
     save.ts              progress & settings saved on the phone (stars, levels, current path)
@@ -85,6 +86,7 @@ src/
     lang.ts              bilingual helpers (which language each task uses)
     adapt.ts             automatic difficulty rules
     sfx.ts               little sound effects (generated, no audio files)
+    music.ts             background music player (instruments, looping, quieter during speech)
     ui.ts                buttons, cards, backgrounds, confetti, animations
     BaseGame.ts          shared game logic: header, progress dots, right/wrong handling, star screen
   scenes/              ← screens
@@ -115,6 +117,21 @@ src/
 - **Change what each difficulty setting contains**: the `LEVELS` table at the top of each game file. How stages map onto settings: `src/core/stageMath.ts`.
 
 Emoji are used as pictures, so a new word only needs an emoji, no image files.
+
+### Background music
+Soft instrumental tunes, composed as notes in `src/data/music.ts` and played by small synthesised
+instruments (`src/core/music.ts`), so there are no music files.
+| Where | Tune |
+|---|---|
+| Home, maps, stage maps, sticker book, Parent Corner | **playful** (bouncy marimba) |
+| Maths, Words, Science, Memory, Patterns, Spot It | **gentle** (slow music box) |
+| Focus balloons, Kindness stories | **calm** (warm pads, almost no tune, so it doesn't distract) |
+| Adventure path | one theme per world: farm (ukulele-like), forest (flute), sea, snow (bells), desert, space |
+
+- The music automatically gets **quieter while Pan Pan speaks**, nearly silent during the rest reminder,
+  and stops when the app goes to the background.
+- **Parent Corner → Music:** Off / Low / Medium / High.
+- To change a tune, edit its notes in `src/data/music.ts` (e.g. `"C5:1"` = C for one beat, `"r:2"` = rest, `"C4+E4+G4:4"` = chord).
 
 ### Voice pack (human-like voices)
 Every sentence can be pre-recorded with a natural-sounding cloud voice (Google Cloud Text-to-Speech,

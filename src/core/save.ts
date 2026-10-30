@@ -14,6 +14,7 @@ export interface SaveData {
   settings: {
     lang: LangMode;
     restMinutes: number; // 0 = no rest reminder
+    music: number; // background music: 0 off, 1 low, 2 medium, 3 high
     enabled: Partial<Record<GameId, boolean>>; // games allowed in Today's Adventure (missing = on)
   };
   stars: number;
@@ -33,7 +34,7 @@ const GAME_IDS: GameId[] = ['count', 'word', 'science', 'moral', 'taponly', 'mem
 
 function defaults(): SaveData {
   return {
-    settings: { lang: 'mixed', restMinutes: 15, enabled: {} },
+    settings: { lang: 'mixed', restMinutes: 15, music: 2, enabled: {} },
     stars: 0,
     adventuresDone: 0,
     stages: Object.fromEntries(GAME_IDS.map((id) => [id, { unlocked: 1, stars: [] }])) as unknown as Record<GameId, StageProgress>,

@@ -1,6 +1,7 @@
 // 🗺️ Adventure Map: six worlds with 5 stages each. Every finished Today's Adventure completes one
 // stage; finishing a world unlocks the next. Tap the glowing world to play its next stage.
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines, modeText, type Bi } from '../core/lang';
 import { sfx } from '../core/sfx';
 import { speech } from '../core/speech';
@@ -15,6 +16,7 @@ export class MapScene extends Phaser.Scene {
 
   create(): void {
     const { width: W } = this.scale;
+    music.play('playful');
     const prog = worldProgress();
     background(this, 'sky');
     button(this, 95, 85, 140, 120, '🏠', () => this.go('Home'), { fill: C.blue, size: 60 });

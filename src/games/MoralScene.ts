@@ -25,6 +25,7 @@ const FEEL_QUESTION: Bi = { en: 'How do they feel?', zh: '这时候心情怎么�
 
 export class MoralScene extends BaseGame {
   readonly gameId = 'moral' as const;
+  protected musicTrack = 'calm' as const;
   private used = new Set<object>();
 
   constructor() {

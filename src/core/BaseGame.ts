@@ -7,6 +7,8 @@ import { addStars, nextStage, persist, recordStage, save, type GameId } from './
 import { sfx } from './sfx';
 import { speech, type Line } from './speech';
 import { levelForStage, stageProgress, STAGES } from './stageMath';
+import { music } from './music';
+import type { TrackId } from '../data/music';
 import { button, C, confetti, mascot, popIn, pulse, speakerButton, tapCard, txt, wait, wiggle, type TapCard } from './ui';
 import { GAMES } from '../data/games';
 import { P, PRAISE, TRY_AGAIN } from '../data/phrases';
@@ -24,6 +26,8 @@ export abstract class BaseGame extends Phaser.Scene {
   protected prompt: Line[] = [];
   protected layer?: Phaser.GameObjects.Container;
   protected stage = 1;
+  /** Background tune for this game: calm music-box for thinking games (TapOnly/Moral use 'calm'). */
+  protected musicTrack: TrackId = 'gentle';
   private dots: Phaser.GameObjects.Arc[] = [];
 
   init(data?: { fromPath?: boolean; stage?: number }): void {
@@ -54,6 +58,7 @@ export abstract class BaseGame extends Phaser.Scene {
   /** Back button (left: home in an adventure, else the stage map), stage number, replay button (right), progress dots. */
   protected header(showDots = true): void {
     const W = this.scale.width;
+    music.play(this.musicTrack);
     button(this, 95, 85, 140, 120, this.fromPath ? '🏠' : '◀', () => this.goBack(), { fill: C.blue, size: 60 }).setDepth(50);
     txt(this, 190, 85, `${GAMES[this.gameId].icon} ${this.stage}`, 50).setOrigin(0, 0.5).setStroke('#ffffff', 8).setDepth(50);
     button(this, W - 95, 85, 140, 120, '🔊', () => this.replay(), { fill: C.purple, size: 56 }).setDepth(50);

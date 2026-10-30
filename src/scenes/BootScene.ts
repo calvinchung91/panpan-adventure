@@ -2,6 +2,7 @@
 // and switches the phone to full-screen landscape.
 import Phaser from 'phaser';
 import { modeLines } from '../core/lang';
+import { music } from '../core/music';
 import { unlockAudio } from '../core/sfx';
 import { speech } from '../core/speech';
 import { background, button, C, mascot, pulse, txt } from '../core/ui';
@@ -26,6 +27,7 @@ export class BootScene extends Phaser.Scene {
 
   private start(): void {
     unlockAudio();
+    music.start();
     void speech.say(modeLines(P.welcome));
     const os = this.sys.game.device.os;
     if ((os.android || os.iOS) && !this.scale.isFullscreen) {

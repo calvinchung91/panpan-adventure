@@ -8,6 +8,11 @@ export function unlockAudio(): void {
   void ctx.resume();
 }
 
+/** The shared audio context (null until the first tap). Background music uses it too. */
+export function audioContext(): AudioContext | null {
+  return ctx;
+}
+
 function tone(freq: number, dur: number, type: OscillatorType = 'sine', vol = 0.2, delay = 0, slideTo?: number): void {
   if (!ctx) return;
   const t = ctx.currentTime + delay;

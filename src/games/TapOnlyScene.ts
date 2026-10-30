@@ -36,6 +36,7 @@ interface Item {
 
 export class TapOnlyScene extends BaseGame {
   readonly gameId = 'taponly' as const;
+  protected musicTrack = 'calm' as const;
   private cfg = LEVELS[1];
   private colors: Balloon[] = [];
   private animals: Animal[] = [];

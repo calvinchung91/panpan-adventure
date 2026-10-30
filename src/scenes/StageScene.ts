@@ -1,6 +1,7 @@
 // Stage map for one game: stages 1–30 with the best stars won on each. Finishing a stage unlocks
 // the next; any unlocked stage can be replayed for more stars.
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines, oneLine } from '../core/lang';
 import { save, type GameId } from '../core/save';
 import { sfx } from '../core/sfx';
@@ -23,6 +24,7 @@ export class StageScene extends Phaser.Scene {
 
   create(): void {
     const { width: W } = this.scale;
+    music.play('playful');
     const info = GAMES[this.gameId];
     const prog = save.stages[this.gameId];
     background(this, 'sky');

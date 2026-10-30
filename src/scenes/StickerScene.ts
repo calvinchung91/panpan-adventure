@@ -1,6 +1,7 @@
 // 📒 Sticker Book: drag won stickers from the tray onto the picture. Drag a sticker back
 // onto the tray to remove it. Positions are saved.
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines, modeText } from '../core/lang';
 import { persist, save, type PlacedSticker } from '../core/save';
 import { sfx } from '../core/sfx';
@@ -20,6 +21,7 @@ export class StickerScene extends Phaser.Scene {
 
   create(): void {
     const { width: W, height: H } = this.scale;
+    music.play('playful');
     const trayX = W - TRAY_W;
     this.dragging = null;
     background(this, 'meadow');

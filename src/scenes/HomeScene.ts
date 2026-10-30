@@ -1,5 +1,6 @@
 // Home: the big "Today's Adventure" button, free-play tiles, star count, and the parent gear (hold 2.5s).
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines } from '../core/lang';
 import { pickOne } from '../core/rand';
 import { nextStage, save } from '../core/save';
@@ -16,6 +17,7 @@ export class HomeScene extends Phaser.Scene {
 
   create(): void {
     const { width: W } = this.scale;
+    music.play('playful');
     background(this, 'meadow');
 
     txt(this, W / 2, 100, P.title.en, 80, '#ffffff').setStroke('#2b6cb0', 12);

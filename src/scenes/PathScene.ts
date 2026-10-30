@@ -1,6 +1,7 @@
 // Today's Adventure: a path of games ending in a trophy. Finishing the whole path is the
 // focus goal; the path grows longer as your child completes them (see pathLength in save.ts).
 import Phaser from 'phaser';
+import { music } from '../core/music';
 import { modeLines, modeText, type Bi } from '../core/lang';
 import { pickOne, shuffle } from '../core/rand';
 import { isEnabled, pathLength, persist, save, type GameId } from '../core/save';
@@ -40,6 +41,7 @@ export class PathScene extends Phaser.Scene {
     const prog = worldProgress();
     const world = WORLDS[prog.world];
     background(this, world.bg, world.decor);
+    music.play(world.music);
     if (!save.currentPath) {
       save.currentPath = { games: makePath(pathLength()), index: 0 };
       persist();
