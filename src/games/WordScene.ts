@@ -7,6 +7,7 @@ import { pickOne, shuffle } from '../core/rand';
 import { save } from '../core/save';
 import type { Line } from '../core/speech';
 import { button, C, popIn, tapCard, txt, type TapCard } from '../core/ui';
+import { S } from '../data/sentences';
 import { difficulty, WORDS, type Word } from '../data/words';
 
 // mode A = word → pick picture, mode B = picture → pick word
@@ -102,7 +103,7 @@ export class WordScene extends BaseGame {
 
     this.showPrompt(
       speak
-        ? { en: `Find the ${target.en}.`, zh: `找一找，${target.zh}在哪里？` }
+        ? S.findWord(target)
         : { en: 'Read the word. Which picture is it?', zh: '读一读，是哪一个？' },
     );
   }

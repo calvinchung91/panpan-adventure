@@ -109,8 +109,30 @@ src/
 
 Emoji are used as pictures, so a new word only needs an emoji, no image files.
 
-### Chinese voice on Android
-Speech uses the phone's Google Text-to-speech. If Chinese is silent:
+### Voice pack (human-like voices)
+Every sentence can be pre-recorded with a Microsoft Azure neural voice and played as audio.
+Anything not recorded uses the phone's own voice, so the game always works.
+
+- Setup (once): a free Azure **Speech** resource (Free F0), and a file `.env.local` in the project folder:
+  ```
+  AZURE_SPEECH_KEY=your-key-1
+  AZURE_SPEECH_REGION=southeastasia
+  AZURE_VOICE_EN=en-US-AnaNeural        (optional, preview voices in Azure's Voice Gallery)
+  AZURE_VOICE_ZH=zh-CN-XiaoyouNeural    (optional)
+  AZURE_RATE=-5%                        (optional speaking speed)
+  ```
+  `.env.local` is private and never uploaded to GitHub.
+- **After adding words, stories or questions:** run this, then commit and push. Only new sentences are recorded:
+  ```bash
+  npm run voices
+  ```
+- `npm run voices -- --dry` just counts the sentences. Changing a voice re-records everything.
+- Recordings go to `public/voice/`; the phone keeps each one after it plays once, so it works offline later.
+- The sentences come from `src/voice/allLines.ts` (sentences with numbers/names, built from `src/data/sentences.ts`)
+  plus every fixed `{ en: '…', zh: '…' }` in the code. Parent Corner shows whether the voice pack is installed.
+
+### Chinese voice on Android (when no voice pack)
+Without a voice pack, speech uses the phone's Google Text-to-speech. If Chinese is silent:
 Android **Settings → Text-to-speech output → Google → ⚙ → Install voice data → Chinese (China)**.
 Parent Corner shows which voices were found.
 

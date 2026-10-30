@@ -9,6 +9,7 @@ import { speech } from '../core/speech';
 import { background, button, C, confetti, popIn, pulse, tapCard, txt, wait } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { P } from '../data/phrases';
+import { S } from '../data/sentences';
 import { awardSticker } from '../data/stickers';
 import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
 
@@ -131,13 +132,13 @@ export class PathScene extends Phaser.Scene {
     // stage message: a new world unlocked, every world finished, or just "stage 3/5 done"
     let stageMsg: Bi | null = null;
     if (worldAfter.allDone && !worldBefore.allDone) {
-      stageMsg = { en: '🎉 You finished every world!', zh: '🎉 你完成了所有的世界！' };
+      stageMsg = S.allWorldsDone;
     } else if (worldAfter.world > worldBefore.world) {
       const nw = WORLDS[worldAfter.world];
-      stageMsg = { en: `🎉 New world unlocked: ${nw.icon} ${nw.name.en}!`, zh: `🎉 解锁新世界：${nw.icon} ${nw.name.zh}！` };
+      stageMsg = S.newWorld(nw.icon, nw.name);
     } else if (!worldAfter.allDone) {
       const w = WORLDS[worldAfter.world];
-      stageMsg = { en: `${w.icon} Stage ${worldAfter.stage} of ${STAGES_PER_WORLD} done!`, zh: `${w.icon} 完成第${worldAfter.stage}关，一共${STAGES_PER_WORLD}关！` };
+      stageMsg = S.stageDone(w.icon, worldAfter.stage, STAGES_PER_WORLD);
     }
 
     sfx.tada();

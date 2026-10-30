@@ -47,7 +47,8 @@ export class ParentScene extends Phaser.Scene {
     label(650, 'Voices');
     const en = speech.enVoice?.name ?? 'default';
     const zh = speech.zhVoice?.name ?? '⚠ none found';
-    txt(this, col, 650, `English: ${en}\nChinese: ${zh}`, 28, '#5b6b88', { align: 'left' }).setOrigin(0, 0.5);
+    const pack = speech.hasPack ? 'Voice pack: installed ✅ (recorded voices)' : 'Voice pack: not installed (phone voice)';
+    txt(this, col, 650, `${pack}\nPhone voices: ${en} / ${zh}`, 28, '#5b6b88', { align: 'left' }).setOrigin(0, 0.5);
     button(this, W - 500, 650, 250, 96, '🔊 English', () => void speech.say([{ text: 'Hello! I am Pan Pan.', lang: 'en' }]), { fill: C.blue, size: 32 });
     button(this, W - 230, 650, 250, 96, '🔊 中文', () => void speech.say([{ text: '你好！我是盼盼。', lang: 'zh' }]), { fill: C.blue, size: 32 });
     if (!speech.zhVoice) {

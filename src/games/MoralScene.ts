@@ -6,6 +6,7 @@ import { BaseGame } from '../core/BaseGame';
 import { line, type Bi } from '../core/lang';
 import { pickOne, shuffle } from '../core/rand';
 import { popIn, tapCard, txt, type TapCard } from '../core/ui';
+import { S } from '../data/sentences';
 import { FEELINGS, FEELING_SCENES, STORIES, STORY_QUESTION, type FeelingId, type Story } from '../data/stories';
 
 // tasks = stories per round; faces = number of feeling choices (0 = no feeling questions yet)
@@ -96,7 +97,7 @@ export class MoralScene extends BaseGame {
     const ids = Object.keys(FEELINGS) as FeelingId[];
     const options = shuffle([item.feel, ...shuffle(ids.filter((f) => f !== item.feel)).slice(0, faces - 1)]);
     const answer = FEELINGS[item.feel];
-    const confirm = [line({ en: `They feel ${answer.en}.`, zh: `感到${answer.zh}。` }, lang)];
+    const confirm = [line(S.feelConfirm(answer), lang)];
     const cards: TapCard[] = [];
     const gap = Math.min(330, (W - 200) / options.length);
     options.forEach((f, i) => {

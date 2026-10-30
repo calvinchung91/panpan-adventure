@@ -2,11 +2,12 @@
 // Counting objects (tap each one to count; this trains careful one-by-one attention),
 // "which side has more / fewer", and simple adding and taking away with pictures.
 import { BaseGame } from '../core/BaseGame';
-import { line, zhCount, type Bi } from '../core/lang';
+import { line, type Bi } from '../core/lang';
 import { pickOne, randInt, shuffle } from '../core/rand';
 import { sfx } from '../core/sfx';
 import type { Line } from '../core/speech';
 import { button, C, gridLayout, popIn, tapCard, txt, type TapCard } from '../core/ui';
+import { S } from '../data/sentences';
 import { COUNTABLES, type Countable } from '../data/words';
 
 type TaskType = 'count' | 'more' | 'fewer' | 'add' | 'sub' | 'seq';
@@ -73,12 +74,11 @@ export class CountScene extends BaseGame {
     });
     if (step > 1) this.layer!.add(txt(this, a.x + a.w / 2, 800, `+${step}  +${step}  +${step} …`, 50, '#a66bff'));
     this.showPrompt({ en: 'Which number is missing?', zh: '缺少哪个数字？' }, a.x + a.w / 2);
-    const said = nums.join(', ');
     // wrong choices: off by one (a common slip) or by a whole step, never a number already shown
     const wrongs = shuffle([answer - 1, answer + 1, answer + step * 2, answer - step * 2, answer + 2]).filter(
       (v, i, arr) => v >= 0 && v !== answer && !nums.includes(v) && arr.indexOf(v) === i,
     );
-    this.choiceButtons([answer, ...wrongs.slice(0, 2)], answer, [line({ en: `${said}!`, zh: `${said}！` }, this.lang)]);
+    this.choiceButtons([answer, ...wrongs.slice(0, 2)], answer, [line(S.seqConfirm(nums), this.lang)]);
   }
 
   private showPrompt(bi: Bi, x: number): void {
@@ -112,14 +112,8 @@ export class CountScene extends BaseGame {
     });
     const hint = !this.countHintGiven;
     this.countHintGiven = true;
-    this.showPrompt(
-      {
-        en: `How many ${item.en}?${hint ? ' Tap each one to count!' : ''}`,
-        zh: `数一数，有几${item.mw}${item.zh}？${hint ? '一个一个点着数！' : ''}`,
-      },
-      a.x + a.w / 2,
-    );
-    this.numberChoices(n, max, [line({ en: `${n} ${item.en}!`, zh: `${zhCount(n)}${item.mw}${item.zh}！` }, this.lang)]);
+    this.showPrompt(S.countPrompt(item, hint), a.x + a.w / 2);
+    this.numberChoices(n, max, S.countConfirm(n, item, this.lang));
   }
 
   private compareTask(item: Countable, kind: 'more' | 'fewer', level: number): void {
@@ -149,14 +143,7 @@ export class CountScene extends BaseGame {
       popIn(this, panel, side * 120);
     });
     const big = Math.max(a, b), small = Math.min(a, b);
-    const confirm: Line[] = [
-      line(
-        kind === 'more'
-          ? { en: `${big} is more than ${small}.`, zh: `${big}比${small}多。` }
-          : { en: `${small} is fewer than ${big}.`, zh: `${small}比${big}少。` },
-        this.lang,
-      ),
-    ];
+    const confirm: Line[] = [line(S.compareConfirm(kind, big, small), this.lang)];
     this.showPrompt(kind === 'more' ? { en: 'Which side has more?', zh: '哪边比较多？' } : { en: 'Which side has fewer?', zh: '哪边比较少？' }, W / 2);
   }
 
@@ -169,11 +156,8 @@ export class CountScene extends BaseGame {
     this.group(item, a, ar.x, gw);
     this.layer!.add(txt(this, ar.x + ar.w / 2, 640, '+', 120, '#ff6fa8'));
     this.group(item, b, ar.x + ar.w - gw, gw);
-    this.showPrompt(
-      { en: `${a} plus ${b}. How many altogether?`, zh: `${a}加${b}，一共有几${item.mw}？` },
-      ar.x + ar.w / 2,
-    );
-    this.numberChoices(r, max, [line({ en: `${a} plus ${b} is ${r}!`, zh: `${a}加${b}等于${r}！` }, this.lang)]);
+    this.showPrompt(S.addPrompt(a, b), ar.x + ar.w / 2);
+    this.numberChoices(r, max, [line(S.addConfirm(a, b), this.lang)]);
   }
 
   private subTask(item: Countable, max: number): void {
@@ -197,11 +181,8 @@ export class CountScene extends BaseGame {
         });
       }
     });
-    this.showPrompt(
-      { en: `${a} take away ${b}. How many are left?`, zh: `${a}减${b}，还剩几${item.mw}${item.zh}？` },
-      ar.x + ar.w / 2,
-    );
-    this.numberChoices(r, max, [line({ en: `${a} take away ${b} is ${r}!`, zh: `${a}减${b}等于${r}！` }, this.lang)]);
+    this.showPrompt(S.subPrompt(a, b), ar.x + ar.w / 2);
+    this.numberChoices(r, max, [line(S.subConfirm(a, b), this.lang)]);
   }
 
   private group(item: Countable, n: number, x: number, w: number): void {

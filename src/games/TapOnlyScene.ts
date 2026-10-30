@@ -8,6 +8,7 @@ import { modeLines, modeText, type Bi } from '../core/lang';
 import { pickOne, randInt, shuffle } from '../core/rand';
 import { sfx } from '../core/sfx';
 import { background, button, C, confetti, popIn, tapCard, txt, wait, wiggle } from '../core/ui';
+import { S } from '../data/sentences';
 import { BALLOON_COLORS, SEA_ANIMALS } from '../data/words';
 
 type Balloon = (typeof BALLOON_COLORS)[number];
@@ -86,14 +87,12 @@ export class TapOnlyScene extends BaseGame {
 
   private rule(): Bi {
     const t = this.target;
-    return this.isColor(t)
-      ? { en: `Tap only the ${t.en} balloons!`, zh: `只点${t.zh}的气球！` }
-      : { en: `Tap only the ${t.en}!`, zh: `只点${t.zh}！` };
+    return S.tapRule(t, this.isColor(t));
   }
 
   private hint(): Bi {
     const t = this.target;
-    return this.isColor(t) ? { en: `Only the ${t.en} ones!`, zh: `只点${t.zh}的！` } : { en: `Only the ${t.en}!`, zh: `只点${t.zh}！` };
+    return S.tapHint(t, this.isColor(t));
   }
 
   /** Small picture of the target, so he doesn't need to read the rule. */
@@ -255,7 +254,7 @@ export class TapOnlyScene extends BaseGame {
     this.drawBanner();
     if (this.banner) popIn(this, this.banner);
     const r = this.rule();
-    const lines = modeLines({ en: `Now ${r.en[0].toLowerCase()}${r.en.slice(1)}`, zh: `现在${r.zh}` });
+    const lines = modeLines(S.tapSwitch(this.target, this.isColor(this.target)));
     this.prompt = modeLines(r);
     await this.speakFor(lines, 6000);
     if (!this.alive) return;

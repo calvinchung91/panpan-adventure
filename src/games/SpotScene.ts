@@ -2,7 +2,8 @@
 // Two picture grids that look the same, except for a few cells. Tap the differences.
 import Phaser from 'phaser';
 import { BaseGame } from '../core/BaseGame';
-import { line, zhCount } from '../core/lang';
+import { line } from '../core/lang';
+import { S } from '../data/sentences';
 import { pickOne, shuffle } from '../core/rand';
 import { sfx } from '../core/sfx';
 import { confetti, pulse, txt, wiggle } from '../core/ui';
@@ -53,10 +54,7 @@ export class SpotScene extends BaseGame {
     const W = this.scale.width;
     const lang = this.lang;
     const k = cfg.diffs;
-    const prompt = {
-      en: k === 1 ? 'Look carefully! Find 1 difference.' : `Look carefully! Find ${k} differences.`,
-      zh: `仔细看！找出${zhCount(k)}个不同的地方。`,
-    };
+    const prompt = S.spotPrompt(k);
     this.layer!.add(txt(this, W / 2, 175, prompt[lang], 48));
 
     const pw = (W - 260) / 2;

@@ -28,6 +28,20 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg}'],
         maximumFileSizeToCacheInBytes: 5_000_000,
+        // Voice recordings are kept on the phone after they play once (thousands of small files,
+        // so they are not all downloaded at install). The list of recordings is always re-checked.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/voice/') && url.pathname.endsWith('.mp3'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'voice', expiration: { maxEntries: 6000 } },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.endsWith('/voice/manifest.json'),
+            handler: 'NetworkFirst',
+            options: { cacheName: 'voice-list' },
+          },
+        ],
       },
     }),
   ],

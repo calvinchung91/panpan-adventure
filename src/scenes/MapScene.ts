@@ -5,6 +5,7 @@ import { modeLines, modeText, type Bi } from '../core/lang';
 import { sfx } from '../core/sfx';
 import { speech } from '../core/speech';
 import { background, button, C, popIn, pulse, tapCard, txt, wiggle } from '../core/ui';
+import { S } from '../data/sentences';
 import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
 
 export class MapScene extends Phaser.Scene {
@@ -48,12 +49,7 @@ export class MapScene extends Phaser.Scene {
     });
 
     const w = WORLDS[prog.world];
-    const said: Bi = prog.allDone
-      ? { en: 'You finished every world! You can keep playing in Space.', zh: '你完成了所有的世界！可以继续在太空冒险。' }
-      : {
-          en: `Let's explore the ${w.name.en}! Stage ${prog.stage + 1} of ${STAGES_PER_WORLD}.`,
-          zh: `我们去${w.name.zh}探险吧！第${prog.stage + 1}关，一共${STAGES_PER_WORLD}关。`,
-        };
+    const said: Bi = prog.allDone ? S.mapAllDone : S.mapExplore(w.name, prog.stage + 1, STAGES_PER_WORLD);
     void speech.say(modeLines(said));
   }
 
@@ -64,12 +60,12 @@ export class MapScene extends Phaser.Scene {
       sfx.wrong();
       wiggle(this, tile);
       const prev = WORLDS[i - 1];
-      void speech.say(modeLines({ en: `Finish the ${prev.name.en} first to unlock it!`, zh: `先完成${prev.name.zh}，就能解锁哦！` }));
+      void speech.say(modeLines(S.mapLocked(prev.name)));
       return;
     }
     // the current world (or Space after everything is done) starts the next adventure
     if (i === prog.world) return this.go('Path');
-    if (done) void speech.say(modeLines({ en: `You finished the ${w.name.en}! Great job!`, zh: `你完成了${w.name.zh}！真棒！` }));
+    if (done) void speech.say(modeLines(S.mapFinished(w.name)));
   }
 
   private go(key: string): void {
