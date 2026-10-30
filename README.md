@@ -110,23 +110,25 @@ src/
 Emoji are used as pictures, so a new word only needs an emoji, no image files.
 
 ### Voice pack (human-like voices)
-Every sentence can be pre-recorded with a Microsoft Azure neural voice and played as audio.
-Anything not recorded uses the phone's own voice, so the game always works.
+Every sentence can be pre-recorded with a natural-sounding cloud voice (Google Cloud Text-to-Speech,
+or Microsoft Azure) and played as audio. Anything not recorded uses the phone's own voice, so the game always works.
 
-- Setup (once): a free Azure **Speech** resource (Free F0), and a file `.env.local` in the project folder:
+- Setup (once, Google): a Google Cloud project with billing set up, the **Cloud Text-to-Speech API** enabled,
+  and an API key restricted to that API. Then a file `.env.local` in the project folder:
   ```
-  AZURE_SPEECH_KEY=your-key-1
-  AZURE_SPEECH_REGION=southeastasia
-  AZURE_VOICE_EN=en-US-AnaNeural        (optional, preview voices in Azure's Voice Gallery)
-  AZURE_VOICE_ZH=zh-CN-XiaoyouNeural    (optional)
-  AZURE_RATE=-5%                        (optional speaking speed)
+  GOOGLE_TTS_KEY=your-api-key
+  GOOGLE_VOICE_EN=en-US-Wavenet-F     (optional, any Google voice name)
+  GOOGLE_VOICE_ZH=cmn-CN-Wavenet-A    (optional)
+  GOOGLE_RATE=0.95                    (optional speaking speed, 1 = normal)
   ```
+  (Azure instead: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`, optional `AZURE_VOICE_EN` / `AZURE_VOICE_ZH` / `AZURE_RATE`.)
   `.env.local` is private and never uploaded to GitHub.
 - **After adding words, stories or questions:** run this, then commit and push. Only new sentences are recorded:
   ```bash
   npm run voices
   ```
-- `npm run voices -- --dry` just counts the sentences. Changing a voice re-records everything.
+- `npm run voices -- --dry` just counts the sentences; `npm run voices -- --sample=10` records only 10 to listen to first.
+  Changing a voice re-records everything.
 - Recordings go to `public/voice/`; the phone keeps each one after it plays once, so it works offline later.
 - The sentences come from `src/voice/allLines.ts` (sentences with numbers/names, built from `src/data/sentences.ts`)
   plus every fixed `{ en: '…', zh: '…' }` in the code. Parent Corner shows whether the voice pack is installed.
