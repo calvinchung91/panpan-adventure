@@ -2,7 +2,7 @@
 import Phaser from 'phaser';
 import { modeLines } from '../core/lang';
 import { pickOne } from '../core/rand';
-import { save } from '../core/save';
+import { nextStage, save } from '../core/save';
 import { speech } from '../core/speech';
 import { background, button, C, holdButton, mascot, pulse, tapCard, txt } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
@@ -39,15 +39,17 @@ export class HomeScene extends Phaser.Scene {
     const adv = button(this, W * 0.6, 385, 780, 200, label, () => this.go(inProgress ? 'Path' : 'Map', {}), { fill: C.orange, size: 56 });
     pulse(this, adv, 1.04);
 
-    // free play: all games, 4 per row
+    // free play: all games, 4 per row; each opens its stage map. The badge shows his next stage.
     const fills = [C.blue, C.pink, C.green, C.purple];
     GAME_IDS.forEach((id, i) => {
       const g = GAMES[id];
       const x = W * 0.6 + ((i % 4) - 1.5) * 250;
       const y = 650 + Math.floor(i / 4) * 230;
-      const tile = tapCard(this, x, y, 230, 200, () => this.go(g.scene, {}), { fill: fills[i % fills.length], radius: 40 });
+      const tile = tapCard(this, x, y, 230, 200, () => this.go('Stage', { game: id }), { fill: fills[i % fills.length], radius: 40 });
       tile.add(txt(this, 0, -38, g.icon, 70));
       tile.add(txt(this, 0, 52, `${g.name.en}\n${g.name.zh}`, 28, '#ffffff').setShadow(0, 3, 'rgba(0,0,0,0.25)', 4));
+      tile.add(this.add.circle(88, -74, 30, 0xffffff));
+      tile.add(txt(this, 88, -74, String(nextStage(id)), 30, '#2b3a55'));
     });
 
     button(this, W - 380, 85, 150, 120, '📒', () => this.go('Sticker', {}), { fill: C.pink, size: 64 });

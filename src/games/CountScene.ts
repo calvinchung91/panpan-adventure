@@ -46,7 +46,10 @@ export class CountScene extends BaseGame {
   }
 
   protected buildTask(): void {
-    const cfg = LEVELS[this.level];
+    // numbers grow a little with each stage, towards the next difficulty setting
+    const cur = LEVELS[this.level], nxt = LEVELS[this.level + 1] ?? cur, t = this.stageStep;
+    const mix = (a: number, b: number) => Math.round(a + (b - a) * t);
+    const cfg = { ...cur, min: mix(cur.min, nxt.min), max: mix(cur.max, nxt.max), addMax: mix(cur.addMax, nxt.addMax), subMax: mix(cur.subMax, nxt.subMax) };
     const type = pickOne(cfg.types);
     const item = pickOne(COUNTABLES);
     if (type === 'count') this.countTask(item, cfg.min, cfg.max);

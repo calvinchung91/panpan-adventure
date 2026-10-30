@@ -41,6 +41,10 @@ export const P = {
   longer: { en: 'Next time, the adventure will be a little longer!', zh: '下次的冒险会更长一点哦！' },
   rest: { en: "Let's rest our eyes for a little while!", zh: '我们让眼睛休息一下吧！' },
   newSticker: { en: 'You got a new sticker!', zh: '你得到了一张新贴纸！' },
+  nextStage: { en: 'You unlocked the next stage!', zh: '你解锁了下一关！' },
+  stage: (n: number): Bi => ({ en: `Stage ${n}`, zh: `第${n}关` }),
+  pickStage: (name: Bi): Bi => ({ en: `${name.en}! Choose a stage.`, zh: `${name.zh}！选一关吧。` }),
+  stageLocked: { en: 'Finish the stage before it first!', zh: '先完成前面那一关哦！' },
   ok: { en: 'OK', zh: '好的' },
   start: { en: 'Start', zh: '开始' },
   stars: (n: number): Bi => ({

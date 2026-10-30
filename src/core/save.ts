@@ -1,4 +1,5 @@
 // Everything that should survive closing the app lives here, stored in the phone's localStorage.
+import { STAGES, stageForLevel } from './stageMath';
 
 export type LangMode = 'en' | 'zh' | 'mixed';
 export type GameId = 'count' | 'word' | 'science' | 'moral' | 'taponly' | 'memory' | 'pattern' | 'spot';
@@ -17,19 +18,25 @@ export interface SaveData {
   };
   stars: number;
   adventuresDone: number;
-  levels: Record<GameId, number>; // difficulty 1..8 per game, adjusted automatically
+  stages: Record<GameId, StageProgress>; // 30 stages per game
   currentPath: { games: GameId[]; index: number } | null; // today's adventure in progress
   stickers: { owned: string[]; placed: PlacedSticker[] };
 }
 
+export interface StageProgress {
+  unlocked: number; // highest stage he can play (1..30)
+  stars: number[]; // best stars per stage; stars[0] is stage 1
+}
+
 const KEY = 'panpan-save-v1';
+const GAME_IDS: GameId[] = ['count', 'word', 'science', 'moral', 'taponly', 'memory', 'pattern', 'spot'];
 
 function defaults(): SaveData {
   return {
     settings: { lang: 'mixed', restMinutes: 15, enabled: {} },
     stars: 0,
     adventuresDone: 0,
-    levels: { count: 2, word: 2, science: 2, moral: 1, taponly: 1, memory: 1, pattern: 2, spot: 1 },
+    stages: Object.fromEntries(GAME_IDS.map((id) => [id, { unlocked: 1, stars: [] }])) as unknown as Record<GameId, StageProgress>,
     currentPath: null,
     stickers: { owned: [], placed: [] },
   };
@@ -40,12 +47,19 @@ function load(): SaveData {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
-      const d = JSON.parse(raw) as Partial<SaveData>;
+      // older saves had "levels" (1..8) instead of stages: start him at the matching stage
+      const d = JSON.parse(raw) as Partial<SaveData> & { levels?: Partial<Record<GameId, number>> };
+      const stages = { ...def.stages };
+      for (const id of GAME_IDS) {
+        if (d.stages?.[id]) stages[id] = d.stages[id];
+        else if (d.levels?.[id]) stages[id] = { unlocked: stageForLevel(d.levels[id]!), stars: [] };
+      }
+      const { levels: _old, ...rest } = d;
       return {
         ...def,
-        ...d,
+        ...rest,
         settings: { ...def.settings, ...d.settings },
-        levels: { ...def.levels, ...d.levels },
+        stages,
         stickers: { ...def.stickers, ...d.stickers },
       };
     }
@@ -74,6 +88,21 @@ export function resetProgress(): void {
   const settings = save.settings;
   Object.assign(save, defaults(), { settings });
   persist();
+}
+
+/** The stage he plays next in a game (his highest unlocked stage). */
+export function nextStage(id: GameId): number {
+  return save.stages[id].unlocked;
+}
+
+/** Saves the best stars for a stage and unlocks the next one. Returns true if a new stage was unlocked. */
+export function recordStage(id: GameId, stage: number, stars: number): boolean {
+  const p = save.stages[id];
+  p.stars[stage - 1] = Math.max(p.stars[stage - 1] ?? 0, stars);
+  const unlockedNew = stage === p.unlocked && p.unlocked < STAGES;
+  if (unlockedNew) p.unlocked++;
+  persist();
+  return unlockedNew;
 }
 
 export function isEnabled(id: GameId): boolean {

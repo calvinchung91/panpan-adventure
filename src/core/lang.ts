@@ -32,6 +32,11 @@ export function modeText(bi: Bi): string {
   return m === 'mixed' ? `${bi.en}\n${bi.zh}` : bi[m];
 }
 
+/** Like modeText, but mixed mode on one line: "Stage 3 · 第3关". */
+export function oneLine(bi: Bi): string {
+  return modeText(bi).replace('\n', ' · ');
+}
+
 /** "2" before a Chinese measure word is read 两 (两个), not 二. */
 export function zhCount(n: number): string {
   return n === 2 ? '两' : String(n);

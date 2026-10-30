@@ -4,6 +4,7 @@
 // Anything missed still works: the game falls back to the phone's own voice for it.
 import type { Bi, Lang } from '../core/lang';
 import type { Line } from '../core/speech';
+import { GAMES } from '../data/games';
 import { P, PRAISE, TRY_AGAIN, HELLO } from '../data/phrases';
 import { makeQuestion, Q_TYPES } from '../data/scienceQuestions';
 import { S } from '../data/sentences';
@@ -20,6 +21,7 @@ export function allLines(): Line[] {
   [...PRAISE, ...TRY_AGAIN, ...HELLO, STORY_QUESTION].forEach(bi);
   Object.values(P).forEach((v) => typeof v === 'object' && bi(v as Bi));
   for (let n = 1; n <= 6; n++) [P.adventureStart(n), P.moreToGo(n), P.stars(n)].forEach(bi);
+  Object.values(GAMES).forEach((g) => bi(P.pickStage(g.name)));
 
   // numbers (tap-to-count, and the first half of "12 fish!")
   for (let n = 0; n <= 60; n++) both((lang) => [{ text: String(n), lang }]);

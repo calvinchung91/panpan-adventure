@@ -7,7 +7,7 @@ import { button, C, holdButton, txt } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { STICKERS } from '../data/stickers';
 import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
-import { MAX_LEVEL } from '../core/adapt';
+import { STAGES } from '../core/stageMath';
 
 export class ParentScene extends Phaser.Scene {
   constructor() {
@@ -56,7 +56,7 @@ export class ParentScene extends Phaser.Scene {
     }
 
     label(810, 'Progress');
-    const lv = GAME_IDS.map((id) => `${GAMES[id].name.en} ${save.levels[id]}/${MAX_LEVEL}`);
+    const lv = GAME_IDS.map((id) => `${GAMES[id].name.en} ${save.stages[id].unlocked}/${STAGES}`);
     const prog = worldProgress();
     const world = prog.allDone
       ? 'all worlds done ✅'
@@ -67,7 +67,7 @@ export class ParentScene extends Phaser.Scene {
       835,
       `⭐ ${save.stars} stars   🏆 ${save.adventuresDone} adventures   📒 ${save.stickers.owned.length}/${STICKERS.length} stickers\n` +
         `World: ${world}   Adventure length: ${pathLength()} games\n` +
-        `Levels:  ${lv.slice(0, 4).join('   ')}\n           ${lv.slice(4).join('   ')}`,
+        `Stages:  ${lv.slice(0, 4).join('   ')}\n           ${lv.slice(4).join('   ')}`,
       28,
       '#2b3a55',
       { align: 'left' },

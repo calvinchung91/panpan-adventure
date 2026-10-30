@@ -2,7 +2,6 @@
 // Balloons float up (or sea animals swim by). Tap ONLY the ones that match the rule and ignore
 // the rest. This trains attention and impulse control. Level 5 switches the rule halfway through.
 import Phaser from 'phaser';
-import { adaptByStars } from '../core/adapt';
 import { BaseGame } from '../core/BaseGame';
 import { modeLines, modeText, type Bi } from '../core/lang';
 import { pickOne, randInt, shuffle } from '../core/rand';
@@ -57,7 +56,9 @@ export class TapOnlyScene extends BaseGame {
   }
 
   create(): void {
-    this.cfg = LEVELS[this.level];
+    // later stages within the same setting: a bit faster, a few more to catch
+    const base = LEVELS[this.level], t = this.stageStep;
+    this.cfg = { ...base, speed: base.speed * (1 + 0.1 * t), spawnMs: Math.round(base.spawnMs * (1 - 0.1 * t)), need: base.need + Math.round(2 * t) };
     this.items = [];
     this.running = false;
     this.caught = 0;
@@ -266,7 +267,6 @@ export class TapOnlyScene extends BaseGame {
     this.spawner?.remove();
     this.clearItems();
     const stars = this.wrongTaps <= 1 ? 3 : this.wrongTaps <= 3 ? 2 : 1;
-    adaptByStars(this.gameId, stars);
     await wait(this, 600);
     this.finishRound(stars);
   }

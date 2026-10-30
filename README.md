@@ -32,8 +32,15 @@ Tapping "Today's Adventure" opens the **🗺️ map**: 6 worlds with **5 stages*
 ### Sticker Book (📒 on the home screen)
 Drag won stickers from the tray onto the picture; drag one back onto the tray to remove it. Positions are saved.
 
-### All 8 games (8 levels each)
-| Game | Teaches | How difficulty grows (levels 1 → 8) |
+### 30 stages in every game
+Tapping a game on the home screen opens its **stage map** (stages 1–30, best ⭐ shown on each).
+- Finishing a stage **unlocks the next one**; any unlocked stage can be replayed for more stars.
+- Today's Adventure always plays his **next** stage in each game. The home tiles show that number.
+- The 30 stages walk through the 8 difficulty settings below (stages 1–4 = setting 1, 5–8 = setting 2, … 27–30 = setting 8),
+  with small step-ups between stages of the same setting (bigger numbers in Maths, faster balloons in Focus, shorter peek in Memory).
+
+### All 8 games (8 difficulty settings each)
+| Game | Teaches | How difficulty grows (settings 1 → 8) |
 |---|---|---|
 | 🔢 **Maths**: Count & Compare | Counting to 50, more/fewer, + and −, number order | 1: count 3–10 · 2: count to 15, "which has more?" · 3: count to 20, + within 5 · 4: count to 25, + within 10 · 5: count to 30, +/− within 10 · 6: count to 40, + within 15, **missing number** (12 13 ❓ 15) · 7: count to 50, +/− within 20, count by 2s · 8: +/− within 20, count by 2s, 5s, 10s |
 | 🔤 **Words**: Word ↔ Picture | Reading English & Chinese (pinyin shown) | 1: hear + see an easy word, 2 pictures · 2: 3 pictures · 3: **read** it (not spoken; 🔊 for help) · 4: see a picture, pick the word · 5: 4 choices · 6: read, 4 pictures · 7: **look-alike** words (same first letter / shared character, e.g. 牛 · 牛奶 · 蜗牛) · 8: look-alike, 5 choices |
@@ -48,7 +55,6 @@ Drag won stickers from the tray onto the picture; drag one back onto the tray to
 - **🔊 on answer cards** (Science, Kindness): tap it to hear the word read aloud. It never counts as choosing that answer. (Not in the Words game, where reading is the point.)
 - **Wrong answers are gentle**: soft sound, wiggle, the choice turns grey. After 2 misses the right answer pulses as a hint. No "game over".
 - **Stars per round**: 3 ⭐ if every task was right first try, 2 ⭐ for most, 1 ⭐ otherwise (Focus: based on wrong taps).
-- **Difficulty adjusts itself**: 3 first-try successes in a row = level up; 2 misses in a row = level down (Focus: 3 stars = up, 1 star = down).
 - **Mixed language mode**: tasks alternate English / Chinese, and after a right answer the word is said in both.
 
 ### Parent Corner
@@ -85,6 +91,7 @@ src/
     BootScene.ts         "Tap to Play" (unlocks sound, goes full screen)
     HomeScene.ts         home screen
     PathScene.ts         Today's Adventure path
+    StageScene.ts        stage map (1–30) for one game
     ParentScene.ts       Parent Corner
     MapScene.ts          Adventure Map (worlds & stages)
     StickerScene.ts      Sticker Book
@@ -105,7 +112,7 @@ src/
 - **New science question**: add an animal to `ANIMAL_HOMES`, a food to `HEALTHY`/`TREATS`, an item to `SINK_FLOAT`, etc. in `src/data/science.ts`.
 - **More praise lines**: add to `PRAISE` in `src/data/phrases.ts`.
 - **Change how fast the adventure grows**: `pathLength()` in `src/core/save.ts`.
-- **Change what each level contains**: the `LEVELS` table at the top of each game file.
+- **Change what each difficulty setting contains**: the `LEVELS` table at the top of each game file. How stages map onto settings: `src/core/stageMath.ts`.
 
 Emoji are used as pictures, so a new word only needs an emoji, no image files.
 

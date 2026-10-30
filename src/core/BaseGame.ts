@@ -1,13 +1,14 @@
 // Shared behaviour for every mini-game: header buttons, progress dots, gentle right/wrong
-// handling, automatic difficulty, and the star result screen at the end of a round.
+// handling, the stage being played (which sets the difficulty), and the star result screen.
 import Phaser from 'phaser';
-import { adapt, type Streak } from './adapt';
-import { line, modeLines, modeText, taskLang, type Lang } from './lang';
+import { line, modeLines, modeText, oneLine, taskLang, type Lang } from './lang';
 import { pickOne } from './rand';
-import { addStars, persist, save, type GameId } from './save';
+import { addStars, nextStage, persist, recordStage, save, type GameId } from './save';
 import { sfx } from './sfx';
 import { speech, type Line } from './speech';
+import { levelForStage, stageProgress, STAGES } from './stageMath';
 import { button, C, confetti, mascot, popIn, pulse, speakerButton, tapCard, txt, wait, wiggle, type TapCard } from './ui';
+import { GAMES } from '../data/games';
 import { P, PRAISE, TRY_AGAIN } from '../data/phrases';
 
 export abstract class BaseGame extends Phaser.Scene {
@@ -22,16 +23,16 @@ export abstract class BaseGame extends Phaser.Scene {
   protected firstTries = 0;
   protected prompt: Line[] = [];
   protected layer?: Phaser.GameObjects.Container;
-  private streak: Streak = { right: 0, wrong: 0 };
+  protected stage = 1;
   private dots: Phaser.GameObjects.Arc[] = [];
 
-  init(data?: { fromPath?: boolean }): void {
+  init(data?: { fromPath?: boolean; stage?: number }): void {
     this.fromPath = !!data?.fromPath;
+    this.stage = data?.stage ?? nextStage(this.gameId); // the adventure plays his next stage
     this.alive = true;
     this.busy = false;
     this.taskIndex = 0;
     this.firstTries = 0;
-    this.streak = { right: 0, wrong: 0 };
     this.dots = [];
     this.layer = undefined;
     this.events.once('shutdown', () => {
@@ -40,14 +41,21 @@ export abstract class BaseGame extends Phaser.Scene {
     });
   }
 
+  /** Difficulty setting 1..8 (row of the game's LEVELS table) for the stage being played. */
   protected get level(): number {
-    return save.levels[this.gameId];
+    return levelForStage(this.stage);
   }
 
-  /** Home button (left), replay-instruction button (right), progress dots (centre). */
+  /** 0..1: how far this stage is into its difficulty setting, for small step-ups between stages. */
+  protected get stageStep(): number {
+    return stageProgress(this.stage);
+  }
+
+  /** Back button (left: home in an adventure, else the stage map), stage number, replay button (right), progress dots. */
   protected header(showDots = true): void {
     const W = this.scale.width;
-    button(this, 95, 85, 140, 120, '🏠', () => this.goHome(), { fill: C.blue, size: 60 }).setDepth(50);
+    button(this, 95, 85, 140, 120, this.fromPath ? '🏠' : '◀', () => this.goBack(), { fill: C.blue, size: 60 }).setDepth(50);
+    txt(this, 190, 85, `${GAMES[this.gameId].icon} ${this.stage}`, 50).setOrigin(0, 0.5).setStroke('#ffffff', 8).setDepth(50);
     button(this, W - 95, 85, 140, 120, '🔊', () => this.replay(), { fill: C.purple, size: 56 }).setDepth(50);
     if (!showDots) return;
     for (let i = 0; i < this.tasksTotal; i++) {
@@ -145,7 +153,6 @@ export abstract class BaseGame extends Phaser.Scene {
       dot.setFillStyle(firstTry ? C.green : C.yellow, 1);
       popIn(this, dot);
     }
-    adapt(this.gameId, firstTry, this.streak);
     this.taskIndex++;
   }
 
@@ -154,22 +161,25 @@ export abstract class BaseGame extends Phaser.Scene {
     return f >= 0.99 ? 3 : f >= 0.6 ? 2 : 1;
   }
 
-  protected goHome(): void {
+  protected goBack(): void {
     speech.stop();
-    this.scene.start('Home');
+    if (this.fromPath) this.scene.start('Home');
+    else this.scene.start('Stage', { game: this.gameId });
   }
 
   /** The end-of-round screen: stars fill in one by one, then a big ▶ button. */
   protected finishRound(stars: number): void {
     this.busy = true;
     addStars(stars);
+    const unlocked = recordStage(this.gameId, this.stage, stars);
     const { width: W, height: H } = this.scale;
     this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.35).setInteractive().setDepth(100);
     const card = tapCard(this, W / 2, H / 2, 980, 760, null, { radius: 60 }).setDepth(101);
     popIn(this, card);
-    card.add(mascot(this, 0, -250, 170));
+    card.add(mascot(this, 0, -280, 130));
+    card.add(txt(this, 0, -180, `${GAMES[this.gameId].icon}  ${oneLine(P.stage(this.stage))}`, 44, '#8e4ff0'));
     for (let i = 0; i < 3; i++) {
-      const s = txt(this, (i - 1) * 190, -60, '⭐', 150).setAlpha(0.2);
+      const s = txt(this, (i - 1) * 190, -55, '⭐', 140).setAlpha(0.2);
       card.add(s);
       if (i < stars) {
         this.time.delayedCall(500 + i * 450, () => {
@@ -180,12 +190,14 @@ export abstract class BaseGame extends Phaser.Scene {
       }
     }
     const praise = pickOne(PRAISE);
-    card.add(txt(this, 0, 110, modeText(praise), 58));
-    const next = button(this, 0, 270, 340, 150, '▶', () => this.leave(), { fill: C.green, size: 80 });
+    card.add(txt(this, 0, 90, modeText(praise), 54));
+    if (unlocked) card.add(txt(this, 0, 170, `🔓 ${oneLine(P.stage(this.stage + 1))}`, 38, '#3a9a5b'));
+    else if (this.stage === STAGES) card.add(txt(this, 0, 170, '🏆 30 / 30', 40, '#3a9a5b'));
+    const next = button(this, 0, 280, 340, 140, '▶', () => this.leave(), { fill: C.green, size: 76 });
     card.add(next);
     this.time.delayedCall(1800, () => pulse(this, next, 1.08));
     confetti(this, W / 2, H * 0.45, 120);
-    void this.say([...modeLines(praise), ...modeLines(P.stars(stars))]);
+    void this.say([...modeLines(praise), ...modeLines(P.stars(stars)), ...(unlocked ? modeLines(P.nextStage) : [])]);
   }
 
   private leave(): void {
@@ -196,7 +208,7 @@ export abstract class BaseGame extends Phaser.Scene {
       persist();
       this.scene.start('Path', { advanced: true });
     } else {
-      this.scene.start('Home');
+      this.scene.start('Stage', { game: this.gameId });
     }
   }
 }

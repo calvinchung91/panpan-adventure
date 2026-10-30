@@ -2,7 +2,6 @@
 // Flip two cards at a time to find matching pairs. Low levels show all cards first ("peek").
 // Each match says the word, so it doubles as vocabulary practice.
 import Phaser from 'phaser';
-import { adaptByStars } from '../core/adapt';
 import { BaseGame } from '../core/BaseGame';
 import { line, modeLines, taskLang } from '../core/lang';
 import { shuffle } from '../core/rand';
@@ -65,7 +64,7 @@ export class MemoryScene extends BaseGame {
       const y = 610 + (row - (rows - 1) / 2) * 320 * s;
       this.cards.push(this.makeCard(x, y, word, s));
     });
-    void this.start(cfg.peekMs);
+    void this.start(Math.round(cfg.peekMs * (1 - 0.4 * this.stageStep))); // shorter peek on later stages
   }
 
   private makeCard(x: number, y: number, word: Word, s: number): Card {
@@ -144,7 +143,6 @@ export class MemoryScene extends BaseGame {
   private async end(): Promise<void> {
     const pairs = this.cards.length / 2;
     const stars = this.misses <= pairs * 0.5 ? 3 : this.misses <= pairs * 1.5 ? 2 : 1;
-    adaptByStars(this.gameId, stars);
     await wait(this, 1200);
     if (this.alive) this.finishRound(stars);
   }
