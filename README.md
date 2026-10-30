@@ -22,20 +22,27 @@ In Chrome, press F12 → the phone icon (device toolbar) → pick a phone and ro
 - If he leaves halfway, the path is remembered and "Continue" appears on the home screen.
 - Finishing an adventure also opens a 🎁 with a **new sticker** for the **📒 Sticker Book** (40 to collect). Stickers come only from whole adventures, which rewards staying focused to the end.
 
+### Adventure Map (stages)
+Tapping "Today's Adventure" opens the **🗺️ map**: 6 worlds with **5 stages** each:
+🚜 Farm → 🌳 Forest → 🌊 Sea → ❄️ Snowland → 🌵 Desert → 🚀 Space.
+- Each finished adventure completes one stage (a ⭐ on the map). Finishing all 5 stages **unlocks the next world** 🎉.
+- The adventure path takes on the current world's look (forest trees, falling snow, stars in space…).
+- After all 30 stages he can keep playing adventures in Space.
+
 ### Sticker Book (📒 on the home screen)
 Drag won stickers from the tray onto the picture; drag one back onto the tray to remove it. Positions are saved.
 
-### All 8 games
-| Game | Teaches | How difficulty grows (levels 1 → 5) |
+### All 8 games (8 levels each)
+| Game | Teaches | How difficulty grows (levels 1 → 8) |
 |---|---|---|
-| 🔬 **Science** | Animal homes, healthy food, 5 senses, day/night, sink or float, weather & clothes, life cycles | 1: animal homes, healthy food (2 choices) · 2: + senses, day/night (3 choices) · 3: + sink/float, weather · 4: life cycles, "what not to eat too much" · 5: everything, 4 choices |
-| 💛 **Kindness** (Moral) | Sharing, helping, sorry, thank you, honesty, waiting your turn, gentle with pets, hygiene, tidying | 3 short stories per round; choose what to do. The unkind choice gently explains how someone would feel, then he tries again |
-| 🃏 **Memory** | Memory & concentration, vocabulary (each match is spoken) | 1: 2 pairs, see all cards first · 2: 3 pairs · 3: 4 pairs · 4: 5 pairs, no peek · 5: 6 pairs |
-| 🧩 **Patterns** | Logic: what comes next | 1: AB (🔴🔵🔴🔵❓) · 2: AAB, ABB · 3: ABC, AABB · 4: what's **missing** in the middle · 5: ABCD, 4 choices |
-| 🔍 **Spot It** | Careful looking & focus | 1: 6 pictures, 1 difference · 2: 9 pictures · 3: 2 differences · 4: 12 pictures · 5: 16 pictures, 3 differences. After 3 wrong taps, one difference gently pulses |
-| 🔢 **Maths**: Count & Compare | Counting to 30, more/fewer, + and − | 1: count 3–10 · 2: count to 15, "which has more?" · 3: count to 20, more/fewer, + within 5 · 4: count to 25, + within 10, − within 6 · 5: count to 30, +/− within 10 |
-| 🔤 **Words**: Word ↔ Picture | Reading English & Chinese (pinyin shown) | 1: hear + see an easy word, 2 pictures · 2: 3 pictures · 3: **read** it (not spoken; 🔊 for help) · 4: see a picture, pick the word · 5: same with 4 choices and longer words |
-| 🎈 **Focus**: Tap Only The ___ | Attention, impulse control, listening | 1: 2 balloon colours, slow · 2: 3 colours · 3: 4 colours, faster · 4: sea animals swimming by · 5: the rule **changes halfway** |
+| 🔢 **Maths**: Count & Compare | Counting to 50, more/fewer, + and −, number order | 1: count 3–10 · 2: count to 15, "which has more?" · 3: count to 20, + within 5 · 4: count to 25, + within 10 · 5: count to 30, +/− within 10 · 6: count to 40, + within 15, **missing number** (12 13 ❓ 15) · 7: count to 50, +/− within 20, count by 2s · 8: +/− within 20, count by 2s, 5s, 10s |
+| 🔤 **Words**: Word ↔ Picture | Reading English & Chinese (pinyin shown) | 1: hear + see an easy word, 2 pictures · 2: 3 pictures · 3: **read** it (not spoken; 🔊 for help) · 4: see a picture, pick the word · 5: 4 choices · 6: read, 4 pictures · 7: **look-alike** words (same first letter / shared character, e.g. 牛 · 牛奶 · 蜗牛) · 8: look-alike, 5 choices |
+| 🔬 **Science** | Animal homes, healthy food, 5 senses, day/night, sink or float, weather, life cycles, **animal sounds**, **seasons** | 1: animal homes, healthy food (2 choices) · 2: + senses, day/night (3 choices) · 3: + sink/float, weather · 4: life cycles · 5: everything, 4 choices · 6: + animal sounds · 7: + seasons · 8: all topics |
+| 💛 **Kindness** (Moral) | 30 stories: sharing, helping, sorry, thank you, honesty, safety, saving water & energy, good manners; **feelings** | 1–2: 3 stories per round · 3+: "**How do they feel?**" questions mixed in (😄😢😠😨😲) · 4–6: 4 per round, more feeling choices · 7–8: 5 per round, all 5 feelings |
+| 🎈 **Focus**: Tap Only The ___ | Attention, impulse control, listening | 1: 2 balloon colours, slow · 2: 3 colours · 3: 4 colours, faster · 4: sea animals · 5: the rule **changes halfway** · 6: 5 colours, faster · 7: sea animals with a rule change · 8: 6 colours, fastest, rule changes **twice** |
+| 🃏 **Memory** | Memory & concentration, vocabulary (each match is spoken) | 1: 2 pairs, see all cards first · 2: 3 pairs · 3: 4 pairs · 4: 5 pairs, no peek · 5: 6 pairs · 6: 7 pairs · 7: 8 pairs · 8: 9 pairs |
+| 🧩 **Patterns** | Logic: what comes next | 1: AB (🔴🔵🔴🔵❓) · 2: AAB, ABB · 3: ABC, AABB · 4: what's **missing** in the middle · 5: ABCD · 6: ABAC, ABCB (missing) · 7: ABBA, AABCC · 8: ABCDE, AABBCC, ABACAD (missing) |
+| 🔍 **Spot It** | Careful looking & focus | 1: 6 pictures, 1 difference · 2: 9 · 3: 2 differences · 4: 12 pictures · 5: 16 pictures, 3 differences · 6: 20 pictures · 7: 4 differences, one is **subtle** (same picture, smaller) · 8: 25 pictures, 5 differences. After 3 wrong taps, one difference gently pulses |
 
 - In counting tasks he can **tap each object** to count it one by one (it gets a number badge and is spoken). This builds careful, one-at-a-time attention.
 - **Wrong answers are gentle**: soft sound, wiggle, the choice turns grey. After 2 misses the right answer pulses as a hint. No "game over".
@@ -62,6 +69,7 @@ src/
     science.ts           animal homes, healthy food, senses, sink/float, weather, life cycles
     stories.ts           kindness stories
     stickers.ts          the 40 stickers to collect
+    worlds.ts            the 6 map worlds (name, look, decorations) and 5 stages per world
     phrases.ts           everything Pan Pan says (praise, try again, …)
     games.ts             list of games shown on home / used by the adventure
   core/                ← shared engine pieces
@@ -77,6 +85,7 @@ src/
     HomeScene.ts         home screen
     PathScene.ts         Today's Adventure path
     ParentScene.ts       Parent Corner
+    MapScene.ts          Adventure Map (worlds & stages)
     StickerScene.ts      Sticker Book
     OverlayScene.ts      rest reminder (always on top)
   games/               ← the mini-games
@@ -90,7 +99,8 @@ src/
   { emoji: '🦒', en: 'giraffe', zh: '长颈鹿', py: 'cháng jǐng lù' },
   ```
 - **New thing to count**: add to `COUNTABLES` with its Chinese measure word (`mw`), e.g. `{ emoji: '🦆', en: 'ducks', zh: '鸭子', mw: '只' }`.
-- **New kindness story**: copy a block in `src/data/stories.ts` (picture, story, kind choice, unkind choice, and what happens after each).
+- **New kindness story**: copy a block in `src/data/stories.ts` (picture, story, kind choice, unkind choice, and what happens after each). Feelings questions are in `FEELING_SCENES` in the same file.
+- **Stages per world**: `STAGES_PER_WORLD` in `src/data/worlds.ts`.
 - **New science question**: add an animal to `ANIMAL_HOMES`, a food to `HEALTHY`/`TREATS`, an item to `SINK_FLOAT`, etc. in `src/data/science.ts`.
 - **More praise lines**: add to `PRAISE` in `src/data/phrases.ts`.
 - **Change how fast the adventure grows**: `pathLength()` in `src/core/save.ts`.

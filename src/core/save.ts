@@ -17,7 +17,7 @@ export interface SaveData {
   };
   stars: number;
   adventuresDone: number;
-  levels: Record<GameId, number>; // difficulty 1..5 per game, adjusted automatically
+  levels: Record<GameId, number>; // difficulty 1..8 per game, adjusted automatically
   currentPath: { games: GameId[]; index: number } | null; // today's adventure in progress
   stickers: { owned: string[]; placed: PlacedSticker[] };
 }

@@ -4,6 +4,7 @@ import { HomeScene } from './scenes/HomeScene';
 import { PathScene } from './scenes/PathScene';
 import { ParentScene } from './scenes/ParentScene';
 import { StickerScene } from './scenes/StickerScene';
+import { MapScene } from './scenes/MapScene';
 import { OverlayScene } from './scenes/OverlayScene';
 import { CountScene } from './games/CountScene';
 import { WordScene } from './games/WordScene';
@@ -27,7 +28,7 @@ const game = new Phaser.Game({
   input: { activePointers: 3 },
   // Order matters: Overlay is last so it always draws on top.
   scene: [
-    BootScene, HomeScene, PathScene, ParentScene, StickerScene,
+    BootScene, HomeScene, MapScene, PathScene, ParentScene, StickerScene,
     CountScene, WordScene, ScienceScene, MoralScene, TapOnlyScene, MemoryScene, PatternScene, SpotScene,
     OverlayScene,
   ],

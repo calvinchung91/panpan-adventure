@@ -1,7 +1,7 @@
 // Today's Adventure: a path of games ending in a trophy. Finishing the whole path is the
 // focus goal; the path grows longer as your child completes them (see pathLength in save.ts).
 import Phaser from 'phaser';
-import { modeLines, modeText } from '../core/lang';
+import { modeLines, modeText, type Bi } from '../core/lang';
 import { pickOne, shuffle } from '../core/rand';
 import { isEnabled, pathLength, persist, save, type GameId } from '../core/save';
 import { sfx } from '../core/sfx';
@@ -10,6 +10,7 @@ import { background, button, C, confetti, popIn, pulse, tapCard, txt, wait } fro
 import { GAMES, GAME_IDS } from '../data/games';
 import { P } from '../data/phrases';
 import { awardSticker } from '../data/stickers';
+import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
 
 /** Picks games (only those switched on in Parent Corner), all different where possible, never the same twice in a row. */
 function makePath(len: number): GameId[] {
@@ -35,7 +36,9 @@ export class PathScene extends Phaser.Scene {
 
   create(): void {
     const { width: W } = this.scale;
-    background(this, 'meadow');
+    const prog = worldProgress();
+    const world = WORLDS[prog.world];
+    background(this, world.bg, world.decor);
     if (!save.currentPath) {
       save.currentPath = { games: makePath(pathLength()), index: 0 };
       persist();
@@ -44,8 +47,9 @@ export class PathScene extends Phaser.Scene {
     const n = path.games.length;
     const idx = path.index;
 
-    button(this, 95, 85, 140, 120, '🏠', () => this.leave('Home'), { fill: C.blue, size: 60 });
-    txt(this, W / 2, 105, modeText(P.todaysAdventure), 54).setStroke('#ffffff', 8);
+    button(this, 95, 85, 140, 120, '🗺️', () => this.leave('Map'), { fill: C.blue, size: 60 });
+    const stage = prog.allDone ? '' : `  ·  ${Math.min(prog.stage + 1, STAGES_PER_WORLD)}/${STAGES_PER_WORLD}`;
+    txt(this, W / 2, 105, `${world.icon} ${modeText(world.name).replace('\n', ' · ')}${stage}`, 54).setStroke('#ffffff', 8);
 
     // stop positions along a gentle wave, plus a trophy at the end
     const total = n + 1;
@@ -117,11 +121,24 @@ export class PathScene extends Phaser.Scene {
   private async complete(token: Phaser.GameObjects.Text): Promise<void> {
     const { width: W, height: H } = this.scale;
     const before = pathLength();
+    const worldBefore = worldProgress();
     save.stars += 5;
     save.adventuresDone++;
     save.currentPath = null;
     persist();
     const longer = pathLength() > before;
+    const worldAfter = worldProgress();
+    // stage message: a new world unlocked, every world finished, or just "stage 3/5 done"
+    let stageMsg: Bi | null = null;
+    if (worldAfter.allDone && !worldBefore.allDone) {
+      stageMsg = { en: '🎉 You finished every world!', zh: '🎉 你完成了所有的世界！' };
+    } else if (worldAfter.world > worldBefore.world) {
+      const nw = WORLDS[worldAfter.world];
+      stageMsg = { en: `🎉 New world unlocked: ${nw.icon} ${nw.name.en}!`, zh: `🎉 解锁新世界：${nw.icon} ${nw.name.zh}！` };
+    } else if (!worldAfter.allDone) {
+      const w = WORLDS[worldAfter.world];
+      stageMsg = { en: `${w.icon} Stage ${worldAfter.stage} of ${STAGES_PER_WORLD} done!`, zh: `${w.icon} 完成第${worldAfter.stage}关，一共${STAGES_PER_WORLD}关！` };
+    }
 
     sfx.tada();
     this.tweens.add({ targets: token, scale: 1.4, duration: 300, yoyo: true, repeat: 2 });
@@ -134,16 +151,16 @@ export class PathScene extends Phaser.Scene {
     this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.35).setInteractive().setDepth(100);
     const card = tapCard(this, W / 2, H / 2, 1000, 820, null, { radius: 60 }).setDepth(101);
     popIn(this, card);
-    card.add(txt(this, 0, -300, '🏆  +5 ⭐', 100));
-    const gift = txt(this, 0, -40, sticker ? '🎁' : '🌟', 220);
+    card.add(txt(this, 0, -310, '🏆  +5 ⭐', 96));
+    if (stageMsg) card.add(txt(this, 0, -195, stageMsg[save.settings.lang === 'zh' ? 'zh' : 'en'], 44, '#8e4ff0'));
+    const gift = txt(this, 0, -10, sticker ? '🎁' : '🌟', 200);
     card.add(gift);
-    const label = txt(this, 0, 150, '', 52);
+    const label = txt(this, 0, 165, '', 50);
     card.add(label);
-    const home = button(this, sticker ? -170 : 0, 310, 300, 140, '🏠', () => this.leave('Home'), { fill: C.blue, size: 70 });
-    card.add(home);
-    if (sticker) card.add(button(this, 170, 310, 300, 140, '📒', () => this.leave('Sticker'), { fill: C.pink, size: 70 }));
+    card.add(button(this, sticker ? -170 : 0, 320, 300, 130, '🗺️', () => this.leave('Map'), { fill: C.blue, size: 66 }));
+    if (sticker) card.add(button(this, 170, 320, 300, 130, '📒', () => this.leave('Sticker'), { fill: C.pink, size: 66 }));
 
-    const lines = [...modeLines(P.adventureDone), ...(longer ? modeLines(P.longer) : [])];
+    const lines = [...modeLines(P.adventureDone), ...(stageMsg ? modeLines(stageMsg) : []), ...(longer ? modeLines(P.longer) : [])];
     if (!sticker) return void speech.say(lines);
 
     // gift wobbles, then opens into the new sticker

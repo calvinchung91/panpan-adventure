@@ -9,15 +9,19 @@ import type { Line } from '../core/speech';
 import { button, C, gridLayout, popIn, tapCard, txt, type TapCard } from '../core/ui';
 import { COUNTABLES, type Countable } from '../data/words';
 
-type TaskType = 'count' | 'more' | 'fewer' | 'add' | 'sub';
+type TaskType = 'count' | 'more' | 'fewer' | 'add' | 'sub' | 'seq';
 
 // What each difficulty level contains. Types listed twice come up more often.
-const LEVELS: Record<number, { types: TaskType[]; min: number; max: number; addMax: number; subMax: number }> = {
+// steps = how the "missing number" rows count (1 = 4,5,6… 2 = 2,4,6… 10 = 10,20,30…)
+const LEVELS: Record<number, { types: TaskType[]; min: number; max: number; addMax: number; subMax: number; steps?: number[] }> = {
   1: { types: ['count'], min: 3, max: 10, addMax: 5, subMax: 5 },
   2: { types: ['count', 'count', 'more'], min: 5, max: 15, addMax: 5, subMax: 5 },
   3: { types: ['count', 'more', 'fewer', 'add'], min: 8, max: 20, addMax: 5, subMax: 5 },
   4: { types: ['count', 'add', 'add', 'sub', 'more'], min: 10, max: 25, addMax: 10, subMax: 6 },
   5: { types: ['count', 'add', 'sub', 'sub', 'fewer'], min: 12, max: 30, addMax: 10, subMax: 10 },
+  6: { types: ['count', 'add', 'sub', 'seq', 'fewer'], min: 15, max: 40, addMax: 15, subMax: 10, steps: [1] },
+  7: { types: ['count', 'add', 'sub', 'seq', 'seq'], min: 20, max: 50, addMax: 20, subMax: 15, steps: [1, 2] },
+  8: { types: ['add', 'sub', 'sub', 'seq', 'count'], min: 25, max: 50, addMax: 20, subMax: 20, steps: [2, 5, 10] },
 };
 
 export class CountScene extends BaseGame {
@@ -47,7 +51,34 @@ export class CountScene extends BaseGame {
     if (type === 'count') this.countTask(item, cfg.min, cfg.max);
     else if (type === 'more' || type === 'fewer') this.compareTask(item, type, this.level);
     else if (type === 'add') this.addTask(item, cfg.addMax);
+    else if (type === 'seq') this.seqTask(pickOne(cfg.steps ?? [1]));
     else this.subTask(item, cfg.subMax);
+  }
+
+  /** A row of numbers with one missing, e.g. 12 13 ❓ 15 16, or counting by 2s, 5s, 10s. */
+  private seqTask(step: number): void {
+    const len = 5;
+    const start = step === 1 ? randInt(1, 45) : step * randInt(0, 4);
+    const nums = Array.from({ length: len }, (_, i) => start + i * step);
+    const missing = randInt(1, len - 1);
+    const answer = nums[missing];
+    const a = this.area();
+    nums.forEach((n, i) => {
+      const x = a.x + a.w / 2 + (i - (len - 1) / 2) * 200;
+      const gap = i === missing;
+      const c = tapCard(this, x, 600, 170, 200, null, { fill: gap ? C.yellow : C.white, radius: 30 });
+      c.add(txt(this, 0, 0, gap ? '❓' : String(n), 90));
+      this.layer!.add(c);
+      popIn(this, c, i * 80);
+    });
+    if (step > 1) this.layer!.add(txt(this, a.x + a.w / 2, 800, `+${step}  +${step}  +${step} …`, 50, '#a66bff'));
+    this.showPrompt({ en: 'Which number is missing?', zh: '缺少哪个数字？' }, a.x + a.w / 2);
+    const said = nums.join(', ');
+    // wrong choices: off by one (a common slip) or by a whole step, never a number already shown
+    const wrongs = shuffle([answer - 1, answer + 1, answer + step * 2, answer - step * 2, answer + 2]).filter(
+      (v, i, arr) => v >= 0 && v !== answer && !nums.includes(v) && arr.indexOf(v) === i,
+    );
+    this.choiceButtons([answer, ...wrongs.slice(0, 2)], answer, [line({ en: `${said}!`, zh: `${said}！` }, this.lang)]);
   }
 
   private showPrompt(bi: Bi, x: number): void {
@@ -178,7 +209,7 @@ export class CountScene extends BaseGame {
     panel.fillStyle(0xffffff, 0.8);
     panel.fillRoundedRect(x, 330, w, 620, 40);
     this.layer!.add(panel);
-    const { pts, cell } = gridLayout(n, { x: x + 20, y: 350, w: w - 40, h: 580 }, 3, 150);
+    const { pts, cell } = gridLayout(n, { x: x + 20, y: 350, w: w - 40, h: 580 }, n > 9 ? 5 : 3, 150);
     pts.forEach((p) => this.layer!.add(txt(this, p.x, p.y, item.emoji, Math.round(cell * 0.72))));
   }
 
@@ -189,10 +220,14 @@ export class CountScene extends BaseGame {
       const v = answer + pickOne([-3, -2, -1, 1, 2, 3]);
       if (v >= 0 && v <= max + 3) values.add(v);
     }
+    this.choiceButtons([...values], answer, confirm);
+  }
+
+  private choiceButtons(values: number[], answer: number, confirm: Line[]): void {
     const W = this.scale.width;
     const fills = [C.blue, C.pink, C.purple];
     let correct!: TapCard;
-    shuffle([...values]).forEach((v, i) => {
+    shuffle(values).forEach((v, i) => {
       const b = button(this, W - 270, 360 + i * 245, 340, 200, String(v), () => void this.handleAnswer(b, v === answer, correct, confirm), {
         fill: fills[i],
         size: 110,

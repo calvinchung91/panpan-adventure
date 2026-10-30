@@ -1,7 +1,7 @@
-// Automatic difficulty: each game has a level 1..5 that follows how your child is doing.
+// Automatic difficulty: each game has a level 1..8 that follows how your child is doing.
 import { save, persist, type GameId } from './save';
 
-export const MAX_LEVEL = 5;
+export const MAX_LEVEL = 8;
 
 export interface Streak {
   right: number;

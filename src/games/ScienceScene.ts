@@ -6,10 +6,11 @@ import { line, type Bi } from '../core/lang';
 import { pickOne, randInt, shuffle } from '../core/rand';
 import { popIn, tapCard, txt, type TapCard } from '../core/ui';
 import {
-  ANIMAL_HOMES, DAY, HABITATS, HEALTHY, LIFE_CYCLES, NIGHT, SENSES, SINK_FLOAT, TREATS, WEATHER, type Named,
+  ANIMAL_HOMES, ANIMAL_SOUNDS, DAY, HABITATS, HEALTHY, LIFE_CYCLES, NIGHT, SEASON_THINGS, SEASONS, SENSES, SINK_FLOAT, TREATS, WEATHER,
+  type Named, type SeasonId,
 } from '../data/science';
 
-type QType = 'habitat' | 'healthy' | 'unhealthy' | 'senses' | 'daynight' | 'sinkfloat' | 'weather' | 'life';
+type QType = 'habitat' | 'healthy' | 'unhealthy' | 'senses' | 'daynight' | 'sinkfloat' | 'weather' | 'life' | 'sounds' | 'seasons';
 
 const LEVELS: Record<number, { types: QType[]; choices: number }> = {
   1: { types: ['habitat', 'healthy'], choices: 2 },
@@ -17,6 +18,9 @@ const LEVELS: Record<number, { types: QType[]; choices: number }> = {
   3: { types: ['habitat', 'senses', 'sinkfloat', 'weather', 'healthy'], choices: 3 },
   4: { types: ['sinkfloat', 'weather', 'life', 'senses', 'unhealthy'], choices: 3 },
   5: { types: ['habitat', 'senses', 'daynight', 'sinkfloat', 'weather', 'life', 'unhealthy'], choices: 4 },
+  6: { types: ['sounds', 'habitat', 'life', 'weather', 'sinkfloat'], choices: 4 },
+  7: { types: ['seasons', 'sounds', 'life', 'unhealthy', 'weather'], choices: 4 },
+  8: { types: ['seasons', 'sounds', 'habitat', 'senses', 'daynight', 'sinkfloat', 'weather', 'life', 'unhealthy'], choices: 4 },
 };
 
 interface Choice {
@@ -110,6 +114,20 @@ function makeQuestion(type: QType, n: number): Question {
         w.emoji, named(item), others.map(named), n,
         { en: `We need ${item.a} when it is ${w.en}!`, zh: `${w.when}，我们需要${item.zh}！` },
       );
+    }
+    case 'sounds': {
+      const a = pickOne(ANIMAL_SOUNDS);
+      return quiz(
+        { en: `Who says "${a.soundEn}"?`, zh: `谁会“${a.soundZh}”地叫？` },
+        '🔊', named(a), ANIMAL_SOUNDS.filter((o) => o !== a).map(named), n,
+        { en: `The ${a.en} says ${a.soundEn}!`, zh: `${a.zh}${a.soundZh}叫！` },
+      );
+    }
+    case 'seasons': {
+      const t = pickOne(SEASON_THINGS);
+      const s = SEASONS[t.season];
+      const others = (Object.keys(SEASONS) as SeasonId[]).filter((id) => id !== t.season).map((id) => named(SEASONS[id]));
+      return quiz(t.q, t.emoji, named(s), others, n, { en: `In ${s.en.toLowerCase()}!`, zh: `在${s.zh}！` });
     }
     case 'life': {
       const cycle = pickOne(LIFE_CYCLES);

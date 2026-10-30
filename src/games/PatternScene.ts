@@ -19,6 +19,9 @@ const LEVELS: Record<number, { templates: string[]; choices: number; middle: boo
   3: { templates: ['ABC', 'AABB', 'ABB'], choices: 3, middle: false },
   4: { templates: ['AB', 'ABC', 'AAB'], choices: 3, middle: true },
   5: { templates: ['ABCD', 'AABC', 'ABBC'], choices: 4, middle: false },
+  6: { templates: ['ABAC', 'ABCB', 'AABBC'], choices: 4, middle: true },
+  7: { templates: ['ABBA', 'AABCC', 'ABCCB'], choices: 4, middle: false },
+  8: { templates: ['ABCDE', 'AABBCC', 'ABACAD'], choices: 4, middle: true },
 };
 
 export class PatternScene extends BaseGame {

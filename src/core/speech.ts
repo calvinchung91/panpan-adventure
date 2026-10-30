@@ -61,7 +61,10 @@ class Speech {
       const next = () => {
         if (my !== this.token || i >= lines.length) return resolve();
         const l = lines[i++];
-        const u = new SpeechSynthesisUtterance(l.text);
+        // never read emoji aloud ("party popper"…)
+        const text = l.text.replace(/[\p{Extended_Pictographic}️‍]/gu, '').trim();
+        if (!text) return next();
+        const u = new SpeechSynthesisUtterance(text);
         u.lang = l.lang === 'zh' ? 'zh-CN' : 'en-US';
         const voice = l.lang === 'zh' ? this.zhVoice : this.enVoice;
         if (voice) u.voice = voice;

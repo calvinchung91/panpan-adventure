@@ -13,12 +13,16 @@ import { BALLOON_COLORS, SEA_ANIMALS } from '../data/words';
 type Balloon = (typeof BALLOON_COLORS)[number];
 type Animal = (typeof SEA_ANIMALS)[number];
 
-const LEVELS: Record<number, { kind: 'color' | 'sea'; options: number; speed: number; spawnMs: number; need: number; switchRule?: boolean }> = {
+// switches = how many times the rule changes during the round
+const LEVELS: Record<number, { kind: 'color' | 'sea'; options: number; speed: number; spawnMs: number; need: number; switches?: number }> = {
   1: { kind: 'color', options: 2, speed: 1, spawnMs: 1400, need: 6 },
   2: { kind: 'color', options: 3, speed: 1.25, spawnMs: 1150, need: 8 },
   3: { kind: 'color', options: 4, speed: 1.5, spawnMs: 950, need: 10 },
   4: { kind: 'sea', options: 4, speed: 1.2, spawnMs: 1000, need: 10 },
-  5: { kind: 'color', options: 4, speed: 1.5, spawnMs: 900, need: 12, switchRule: true },
+  5: { kind: 'color', options: 4, speed: 1.5, spawnMs: 900, need: 12, switches: 1 },
+  6: { kind: 'color', options: 5, speed: 1.7, spawnMs: 800, need: 14, switches: 1 },
+  7: { kind: 'sea', options: 5, speed: 1.5, spawnMs: 850, need: 14, switches: 1 },
+  8: { kind: 'color', options: 6, speed: 1.9, spawnMs: 750, need: 16, switches: 2 },
 };
 
 interface Item {
@@ -42,7 +46,7 @@ export class TapOnlyScene extends BaseGame {
   private caught = 0;
   private wrongTaps = 0;
   private sinceTarget = 0;
-  private switched = false;
+  private switchesDone = 0;
   private lastHint = 0;
   private bar!: Phaser.GameObjects.Graphics;
   private banner?: Phaser.GameObjects.Container;
@@ -58,7 +62,7 @@ export class TapOnlyScene extends BaseGame {
     this.caught = 0;
     this.wrongTaps = 0;
     this.sinceTarget = 0;
-    this.switched = false;
+    this.switchesDone = 0;
     this.lastHint = 0;
     this.banner = undefined;
     if (this.cfg.kind === 'color') {
@@ -225,7 +229,8 @@ export class TapOnlyScene extends BaseGame {
     this.tweens.add({ targets: it.obj, scale: it.obj.scale * 1.5, alpha: 0, duration: 250, onComplete: () => it.obj.destroy() });
     this.caught++;
     this.drawBar();
-    if (this.cfg.switchRule && !this.switched && this.caught === Math.floor(this.cfg.need / 2)) void this.switchRule();
+    const sw = this.cfg.switches ?? 0;
+    if (this.switchesDone < sw && this.caught === Math.floor((this.cfg.need * (this.switchesDone + 1)) / (sw + 1))) void this.switchRule();
     else if (this.caught >= this.cfg.need) void this.end();
   }
 
@@ -238,18 +243,20 @@ export class TapOnlyScene extends BaseGame {
     this.items = [];
   }
 
-  /** Level 5: the rule changes halfway, so he has to listen and switch focus. */
+  /** Level 5+: the rule changes during the round, so he has to listen and switch focus. */
   private async switchRule(): Promise<void> {
     this.running = false;
     this.spawner?.remove();
     this.clearItems();
-    this.switched = true;
-    this.target = pickOne(this.colors.filter((c) => c !== this.target));
+    this.switchesDone++;
+    this.target = this.isColor(this.target)
+      ? pickOne(this.colors.filter((c) => c !== this.target))
+      : pickOne(this.animals.filter((a) => a !== this.target));
     this.drawBanner();
     if (this.banner) popIn(this, this.banner);
-    const t = this.target as Balloon;
-    const lines = modeLines({ en: `Now tap only the ${t.en} balloons!`, zh: `现在只点${t.zh}的气球！` });
-    this.prompt = modeLines(this.rule());
+    const r = this.rule();
+    const lines = modeLines({ en: `Now ${r.en[0].toLowerCase()}${r.en.slice(1)}`, zh: `现在${r.zh}` });
+    this.prompt = modeLines(r);
     await this.speakFor(lines, 6000);
     if (!this.alive) return;
     this.begin();

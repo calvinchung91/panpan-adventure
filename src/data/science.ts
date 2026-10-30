@@ -139,3 +139,36 @@ export const LIFE_CYCLES: Named[][] = [
     { emoji: '🧓', en: 'grandparent', zh: '老人' },
   ],
 ];
+
+// Animal sounds
+export const ANIMAL_SOUNDS: (Named & { soundEn: string; soundZh: string })[] = [
+  { emoji: '🐄', en: 'cow', zh: '奶牛', soundEn: 'Moo', soundZh: '哞哞' },
+  { emoji: '🐶', en: 'dog', zh: '小狗', soundEn: 'Woof woof', soundZh: '汪汪' },
+  { emoji: '🐱', en: 'cat', zh: '小猫', soundEn: 'Meow', soundZh: '喵喵' },
+  { emoji: '🦆', en: 'duck', zh: '鸭子', soundEn: 'Quack quack', soundZh: '嘎嘎' },
+  { emoji: '🐑', en: 'sheep', zh: '绵羊', soundEn: 'Baa', soundZh: '咩咩' },
+  { emoji: '🐷', en: 'pig', zh: '小猪', soundEn: 'Oink oink', soundZh: '哼哼' },
+  { emoji: '🐓', en: 'rooster', zh: '公鸡', soundEn: 'Cock-a-doodle-doo', soundZh: '喔喔喔' },
+  { emoji: '🐸', en: 'frog', zh: '青蛙', soundEn: 'Ribbit', soundZh: '呱呱' },
+  { emoji: '🦁', en: 'lion', zh: '狮子', soundEn: 'Roar', soundZh: '嗷呜' },
+];
+
+// Seasons
+export const SEASONS = {
+  spring: { emoji: '🌷', en: 'Spring', zh: '春天' },
+  summer: { emoji: '🌞', en: 'Summer', zh: '夏天' },
+  autumn: { emoji: '🍁', en: 'Autumn', zh: '秋天' },
+  winter: { emoji: '❄️', en: 'Winter', zh: '冬天' },
+};
+export type SeasonId = keyof typeof SEASONS;
+
+export const SEASON_THINGS: { emoji: string; q: Bi; season: SeasonId }[] = [
+  { emoji: '⛄', q: { en: 'When do we build a snowman?', zh: '什么时候可以堆雪人？' }, season: 'winter' },
+  { emoji: '🌸', q: { en: 'When do flowers start to bloom?', zh: '花儿什么时候开始开？' }, season: 'spring' },
+  { emoji: '🍂', q: { en: 'When do leaves turn brown and fall?', zh: '树叶什么时候变黄掉下来？' }, season: 'autumn' },
+  { emoji: '🏖️', q: { en: 'When do we swim at the beach?', zh: '什么时候去海边游泳？' }, season: 'summer' },
+  { emoji: '🍉', q: { en: 'When do we eat lots of watermelon?', zh: '什么时候吃很多西瓜？' }, season: 'summer' },
+  { emoji: '🧣', q: { en: 'When do we wear a warm scarf?', zh: '什么时候要戴暖和的围巾？' }, season: 'winter' },
+  { emoji: '🐣', q: { en: 'When are lots of baby animals born?', zh: '很多小动物在什么时候出生？' }, season: 'spring' },
+  { emoji: '🎃', q: { en: 'When do we pick pumpkins?', zh: '什么时候收南瓜？' }, season: 'autumn' },
+];

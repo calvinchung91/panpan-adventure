@@ -166,20 +166,50 @@ export function holdButton(
   return c;
 }
 
-export type BgKind = 'sky' | 'meadow' | 'sea';
+export type BgKind = 'sky' | 'meadow' | 'sea' | 'forest' | 'snow' | 'desert' | 'space';
 
-export function background(scene: Phaser.Scene, kind: BgKind): void {
+// sky gradient (top, bottom) and the two hill colours for each background
+const BG: Record<BgKind, { sky: [number, number]; hills?: [number, number] }> = {
+  sky: { sky: [0x8fd3ff, 0xdff5ff] },
+  meadow: { sky: [0x8fd3ff, 0xdff5ff], hills: [0x9fdc74, 0x86cf5f] },
+  sea: { sky: [0x5cc4f0, 0x1f73b8] },
+  forest: { sky: [0x9ed8b4, 0xe2f6e6], hills: [0x5fae6e, 0x4b9a5b] },
+  snow: { sky: [0xa9d8ff, 0xf4fbff], hills: [0xffffff, 0xe6f1fa] },
+  desert: { sky: [0xffc98a, 0xfff0d4], hills: [0xf2c27b, 0xe6ad5f] },
+  space: { sky: [0x0b1340, 0x2a2f7a] },
+};
+
+/** Draws a background. decor = emoji scattered along the bottom (used for the world themes). */
+export function background(scene: Phaser.Scene, kind: BgKind, decor: string[] = []): void {
   const { width: W, height: H } = scene.scale;
   const g = scene.add.graphics().setDepth(-10);
-  const [top, bottom] = kind === 'sea' ? [0x5cc4f0, 0x1f73b8] : [0x8fd3ff, 0xdff5ff];
+  const { sky: [top, bottom], hills } = BG[kind];
   g.fillGradientStyle(top, top, bottom, bottom, 1);
   g.fillRect(0, 0, W, H);
 
-  if (kind === 'meadow') {
-    g.fillStyle(0x9fdc74, 1);
+  if (hills) {
+    g.fillStyle(hills[0], 1);
     g.fillEllipse(W * 0.25, H * 1.05, W * 1.0, H * 0.55);
-    g.fillStyle(0x86cf5f, 1);
+    g.fillStyle(hills[1], 1);
     g.fillEllipse(W * 0.8, H * 1.08, W * 1.1, H * 0.6);
+  }
+  decor.forEach((e, i) => {
+    const d = txt(scene, (W * (i + 0.5)) / decor.length + Phaser.Math.Between(-60, 60), H - Phaser.Math.Between(70, 130), e, Phaser.Math.Between(80, 110));
+    d.setDepth(-8).setAlpha(0.9);
+    scene.tweens.add({ targets: d, y: d.y - 10, duration: Phaser.Math.Between(1200, 1800), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+  });
+  if (kind === 'space') {
+    for (let i = 0; i < 60; i++) {
+      const s = scene.add.circle(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), Phaser.Math.Between(2, 5), 0xffffff, 0.8).setDepth(-9);
+      scene.tweens.add({ targets: s, alpha: 0.2, duration: Phaser.Math.Between(800, 2000), yoyo: true, repeat: -1, delay: Phaser.Math.Between(0, 2000) });
+    }
+    return;
+  }
+  if (kind === 'snow') {
+    for (let i = 0; i < 30; i++) {
+      const f = scene.add.circle(Phaser.Math.Between(0, W), Phaser.Math.Between(-H, 0), Phaser.Math.Between(4, 9), 0xffffff, 0.9).setDepth(-9);
+      scene.tweens.add({ targets: f, y: H + 20, x: f.x + Phaser.Math.Between(-80, 80), duration: Phaser.Math.Between(7000, 12000), repeat: -1 });
+    }
   }
   if (kind === 'sea') {
     g.fillStyle(0xf3d9a4, 1);

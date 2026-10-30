@@ -71,6 +71,37 @@ export const WORDS: Word[] = [
   { emoji: '👄', en: 'mouth', zh: '嘴巴', py: 'zuǐ ba' },
   { emoji: '✋', en: 'hand', zh: '手', py: 'shǒu' },
   { emoji: '🦶', en: 'foot', zh: '脚', py: 'jiǎo' },
+  // more animals
+  { emoji: '🐻', en: 'bear', zh: '熊', py: 'xióng' },
+  { emoji: '🐝', en: 'bee', zh: '蜜蜂', py: 'mì fēng' },
+  { emoji: '🐍', en: 'snake', zh: '蛇', py: 'shé' },
+  { emoji: '🐌', en: 'snail', zh: '蜗牛', py: 'wō niú' },
+  { emoji: '🦈', en: 'shark', zh: '鲨鱼', py: 'shā yú' },
+  { emoji: '🐳', en: 'whale', zh: '鲸鱼', py: 'jīng yú' },
+  { emoji: '🦒', en: 'giraffe', zh: '长颈鹿', py: 'cháng jǐng lù' },
+  { emoji: '🦓', en: 'zebra', zh: '斑马', py: 'bān mǎ' },
+  { emoji: '🐊', en: 'crocodile', zh: '鳄鱼', py: 'è yú' },
+  { emoji: '🐧', en: 'penguin', zh: '企鹅', py: 'qǐ é' },
+  // more food
+  { emoji: '🍐', en: 'pear', zh: '梨', py: 'lí' },
+  { emoji: '🍑', en: 'peach', zh: '桃子', py: 'táo zi' },
+  { emoji: '🍋', en: 'lemon', zh: '柠檬', py: 'níng méng' },
+  { emoji: '🍊', en: 'orange', zh: '橙子', py: 'chéng zi' },
+  { emoji: '🎂', en: 'cake', zh: '蛋糕', py: 'dàn gāo' },
+  { emoji: '🌽', en: 'corn', zh: '玉米', py: 'yù mǐ' },
+  // more things
+  { emoji: '🚢', en: 'ship', zh: '轮船', py: 'lún chuán' },
+  { emoji: '🚀', en: 'rocket', zh: '火箭', py: 'huǒ jiàn' },
+  { emoji: '🚒', en: 'fire engine', zh: '消防车', py: 'xiāo fáng chē' },
+  { emoji: '👒', en: 'hat', zh: '帽子', py: 'mào zi' },
+  { emoji: '👟', en: 'shoe', zh: '鞋子', py: 'xié zi' },
+  { emoji: '🧦', en: 'socks', zh: '袜子', py: 'wà zi' },
+  { emoji: '🔑', en: 'key', zh: '钥匙', py: 'yào shi' },
+  { emoji: '🛏️', en: 'bed', zh: '床', py: 'chuáng' },
+  { emoji: '🚪', en: 'door', zh: '门', py: 'mén' },
+  { emoji: '⏰', en: 'clock', zh: '闹钟', py: 'nào zhōng' },
+  { emoji: '✏️', en: 'pencil', zh: '铅笔', py: 'qiān bǐ' },
+  { emoji: '☂️', en: 'umbrella', zh: '雨伞', py: 'yǔ sǎn' },
 ];
 
 export function difficulty(w: Word, lang: Lang): number {

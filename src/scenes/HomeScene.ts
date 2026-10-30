@@ -7,6 +7,7 @@ import { speech } from '../core/speech';
 import { background, button, C, holdButton, mascot, pulse, tapCard, txt } from '../core/ui';
 import { GAMES, GAME_IDS } from '../data/games';
 import { HELLO, P } from '../data/phrases';
+import { STAGES_PER_WORLD, WORLDS, worldProgress } from '../data/worlds';
 
 export class HomeScene extends Phaser.Scene {
   constructor() {
@@ -28,11 +29,14 @@ export class HomeScene extends Phaser.Scene {
     });
 
     const path = save.currentPath;
-    const label =
-      path && path.index > 0
-        ? `▶  ${P.continueAdventure.en}  ${path.index}/${path.games.length}\n${P.continueAdventure.zh}`
-        : `▶  ${P.todaysAdventure.en}\n${P.todaysAdventure.zh}`;
-    const adv = button(this, W * 0.6, 385, 780, 200, label, () => this.go('Path', {}), { fill: C.orange, size: 60 });
+    const prog = worldProgress();
+    const where = `${WORLDS[prog.world].icon} ${prog.allDone ? '✅' : `${prog.stage + 1}/${STAGES_PER_WORLD}`}`;
+    const inProgress = !!path && path.index > 0;
+    const label = inProgress
+      ? `▶  ${P.continueAdventure.en}  ${path!.index}/${path!.games.length}\n${P.continueAdventure.zh}  ·  ${where}`
+      : `▶  ${P.todaysAdventure.en}\n${P.todaysAdventure.zh}  ·  ${where}`;
+    // a half-finished adventure continues straight away; otherwise open the map
+    const adv = button(this, W * 0.6, 385, 780, 200, label, () => this.go(inProgress ? 'Path' : 'Map', {}), { fill: C.orange, size: 56 });
     pulse(this, adv, 1.04);
 
     // free play: all games, 4 per row

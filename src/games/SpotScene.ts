@@ -14,13 +14,18 @@ const THEMES = [
   ['⭐', '🌙', '☀️', '🌈', '☁️', '🌸', '🌻', '🍀', '🌳', '🍄', '❄️', '🔥'],
 ];
 
-const LEVELS: Record<number, { cols: number; rows: number; diffs: number }> = {
+// subtle = one difference is the same picture but smaller, which needs really careful looking
+const LEVELS: Record<number, { cols: number; rows: number; diffs: number; subtle?: boolean }> = {
   1: { cols: 3, rows: 2, diffs: 1 },
   2: { cols: 3, rows: 3, diffs: 1 },
   3: { cols: 3, rows: 3, diffs: 2 },
   4: { cols: 4, rows: 3, diffs: 2 },
   5: { cols: 4, rows: 4, diffs: 3 },
+  6: { cols: 5, rows: 4, diffs: 3 },
+  7: { cols: 5, rows: 4, diffs: 4, subtle: true },
+  8: { cols: 5, rows: 5, diffs: 5, subtle: true },
 };
+const SMALL = 0.6;
 
 export class SpotScene extends BaseGame {
   readonly gameId = 'spot' as const;
@@ -42,7 +47,8 @@ export class SpotScene extends BaseGame {
     const n = cfg.cols * cfg.rows;
     const left = Array.from({ length: n }, () => pickOne(theme));
     const diffs = new Set(shuffle([...Array(n).keys()]).slice(0, cfg.diffs));
-    const right = left.map((e, i) => (diffs.has(i) ? pickOne(theme.filter((t) => t !== e)) : e));
+    const small = new Set(cfg.subtle ? [...diffs].slice(0, 1) : []);
+    const right = left.map((e, i) => (diffs.has(i) && !small.has(i) ? pickOne(theme.filter((t) => t !== e)) : e));
 
     const W = this.scale.width;
     const lang = this.lang;
@@ -75,7 +81,10 @@ export class SpotScene extends BaseGame {
         t.setInteractive({ useHandCursor: true });
         t.on('pointerdown', () => tap(i, t));
         this.layer!.add(t);
-        if (side === 1) cellsRight.push(t);
+        if (side === 1) {
+          cellsRight.push(t);
+          if (small.has(i)) t.setScale(SMALL);
+        }
       });
     });
     this.layer!.add(marks); // added last so the red circles draw on top of the panels
@@ -98,7 +107,7 @@ export class SpotScene extends BaseGame {
         sfx.correct();
         confetti(this, t.x, t.y, 20);
         this.tweens.killTweensOf(cellsRight[i]);
-        cellsRight[i].setScale(1);
+        cellsRight[i].setScale(small.has(i) ? SMALL : 1);
         if (found.size === diffs.size) {
           void this.completeTask(mistakes === 0, [line({ en: 'You found them all!', zh: '全部找到了！' }, lang)]);
         }
@@ -109,7 +118,7 @@ export class SpotScene extends BaseGame {
         if (mistakes >= 3 && !hinted) {
           hinted = true;
           const next = [...diffs].find((d) => !found.has(d));
-          if (next !== undefined) pulse(this, cellsRight[next], 1.15);
+          if (next !== undefined) pulse(this, cellsRight[next], cellsRight[next].scale * 1.15);
         }
       }
     };

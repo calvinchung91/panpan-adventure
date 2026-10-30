@@ -16,6 +16,9 @@ const LEVELS: Record<number, { pairs: number; peekMs: number }> = {
   3: { pairs: 4, peekMs: 2000 },
   4: { pairs: 5, peekMs: 0 },
   5: { pairs: 6, peekMs: 0 },
+  6: { pairs: 7, peekMs: 0 },
+  7: { pairs: 8, peekMs: 0 },
+  8: { pairs: 9, peekMs: 0 },
 };
 
 interface Card {
@@ -52,27 +55,29 @@ export class MemoryScene extends BaseGame {
     const words = shuffle(WORDS).slice(0, cfg.pairs);
     const deck = shuffle([...words, ...words]);
     const n = deck.length;
-    const cols = n <= 6 ? n : Math.ceil(n / 2);
-    const rows = n <= 6 ? 1 : 2;
+    const rows = n <= 6 ? 1 : n <= 12 ? 2 : 3;
+    const cols = Math.ceil(n / rows);
+    const s = rows === 3 ? 0.8 : 1; // smaller cards when there are 3 rows
     const W = this.scale.width;
     deck.forEach((word, i) => {
       const col = i % cols, row = Math.floor(i / cols);
-      const x = W / 2 + (col - (cols - 1) / 2) * 260;
-      const y = 600 + (row - (rows - 1) / 2) * 320;
-      this.cards.push(this.makeCard(x, y, word));
+      const x = W / 2 + (col - (cols - 1) / 2) * 260 * s;
+      const y = 610 + (row - (rows - 1) / 2) * 320 * s;
+      this.cards.push(this.makeCard(x, y, word, s));
     });
     void this.start(cfg.peekMs);
   }
 
-  private makeCard(x: number, y: number, word: Word): Card {
+  private makeCard(x: number, y: number, word: Word, s: number): Card {
+    const w = 230 * s, h = 290 * s;
     const box = this.add.container(x, y);
-    const back = tapCard(this, 0, 0, 230, 290, null, { fill: C.purple, radius: 36 });
-    back.add(txt(this, 0, 0, '🐼', 90).setAlpha(0.85));
-    const front = tapCard(this, 0, 0, 230, 290, null, { radius: 36 });
-    front.add(txt(this, 0, 0, word.emoji, 140));
+    const back = tapCard(this, 0, 0, w, h, null, { fill: C.purple, radius: 36 });
+    back.add(txt(this, 0, 0, '🐼', Math.round(90 * s)).setAlpha(0.85));
+    const front = tapCard(this, 0, 0, w, h, null, { radius: 36 });
+    front.add(txt(this, 0, 0, word.emoji, Math.round(140 * s)));
     front.setVisible(false);
     box.add([back, front]);
-    box.setSize(230, 290).setInteractive({ useHandCursor: true });
+    box.setSize(w, h).setInteractive({ useHandCursor: true });
     const card: Card = { box, front, back, word, up: false, matched: false };
     box.on('pointerup', () => this.tap(card));
     popIn(this, box, this.cards.length * 60);
